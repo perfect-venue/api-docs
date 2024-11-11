@@ -1,0 +1,63 @@
+get:
+  tags:
+    - Venues
+  summary: Get venue
+  description: >
+    Get an individual venue by ID.
+  operationId: getVenue
+  parameters:
+    - in: path
+      name: venue_id
+      schema:
+        type: string
+        description: The ID of the venue
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [success]
+              data:
+                $ref: "../components/schemas/Venue.yaml"
+    '403':
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: You do not have access to this venue
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Venue not found
+                

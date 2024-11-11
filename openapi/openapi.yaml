@@ -1,0 +1,143 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Perfect Venue API Docs
+  termsOfService: https://www.perfectvenue.com/terms-of-service
+  contact:
+    name: Contact us
+    email: eng@perfectvenue.com
+    url: https://www.perfectvenue.com
+  x-logo:
+    url: https://cdn.prod.website-files.com/63d06722a6f6c812bbe32959/63d2fec1c973d398875d5a4e_PV_logo%402x.png
+    altText: Perfect Venue Logo
+  description: >
+    # Introduction
+
+    Welcome to the Perfect Venue API docs. This API is available to Perfect Venue partners. If you're interested
+    in building an integration, please reach out to eng@perfectvenue.com and we'll help you get set up.  
+    
+
+    This site was generated with [Redoc](https://github.com/Redocly/Redoc) and the [OpenAPI/Swagger
+    format](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md).
+
+    # Authentication
+
+    The Perfect Venue API uses Bearer tokens for authentication. You can obtain a token by following the
+    OAuth 2.0 authorization code flow, described below.
+
+    ## Authorizing the app
+
+    Direct the user to the Authorization URL with the following query parameters:
+
+      * `response_type`: Set to "code"
+      * `client_id`: Your application’s unique client ID, provided during registration
+      * `redirect_uri`: The URL to which the user will be redirected after authorization
+      * `scope`: Space-separated list of permissions your application needs
+      * `state`: (Optional but recommended) A random string to maintain state between the request and callback, helping to prevent [CSRF attacks](https://auth0.com/docs/secure/attack-protection/state-parameters)
+
+    Example Authorization URL:
+
+    ~~~
+      https://api.perfectvenue.com/oauth/authorize?response_type=code&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=venues:read%20events:write&state=RANDOM_STRING
+    ~~~ 
+
+    ## Obtaining an access token
+
+    Once the user has authorized your application, they will be redirected to the specified
+    `redirect_uri` with a code parameter in the query string.  
+
+
+    To exchange this authorization code for an access token, send a POST request to the Token URL
+    with the following setup:
+
+      1. `Authorization` Header: Use Basic HTTP authentication, where the `client_id` and `client_secret` are
+      combined in the format `client_id:client_secret` and Base64 encoded. This encoded value is included in the
+      Authorization header as `Basic <encoded_credentials>`.
+      2. Body Parameters (URL-encoded)  
+          * `grant_type`: Set to "authorization_code"
+          * `code`: The authorization code received in the redirect
+          * `redirect_uri`: Must match the `redirect_uri` used the previous step
+
+
+    Example Token Request:  
+
+    ~~~
+      POST https://api.perfectvenue.com/oauth/token
+      Authorization: Basic BASE64_ENCODED(client_id:client_secret)
+      Content-Type: application/x-www-form-urlencoded
+
+      grant_type=authorization_code&code=AUTHORIZATION_CODE&redirect_uri=REDIRECT_URI
+    ~~~
+
+    ## Using access tokens
+
+    Upon a successful token exchange, you’ll receive a JSON response with an access token.
+    Include this token in the Authorization header as `Bearer <token>` for all authenticated requests.  
+
+
+    Example API Request:
+
+    ~~~
+      GET /api/v1/venues
+      Host: api.perfectvenue.com
+      Authorization: Bearer YOUR_ACCESS_TOKEN
+    ~~~
+
+    ## Using refresh tokens
+
+    Token responses will include a refresh token that can be exchanged for a new access token.
+
+    To exchange this authorization code for an access token, send a POST request to the Token URL
+    with the following setup:
+
+      1. `Authorization` Header: Use Basic HTTP authentication, where the `client_id` and `client_secret` are
+      combined in the format `client_id:client_secret` and Base64 encoded. This encoded value is included in the
+      Authorization header as `Basic <encoded_credentials>`.
+      2. Body Parameters (URL-encoded)  
+          * `grant_type`: Set to "refresh_token"
+          * `refresh_token`: The refresh token obtained from a previous token request
+      
+    Example Refresh Token Request:  
+
+    ~~~
+      POST https://api.perfectvenue.com/oauth/token
+      Authorization: Basic BASE64_ENCODED(client_id:client_secret)
+      Content-Type: application/x-www-form-urlencoded
+
+      grant_type=refresh_token&refresh_token=REFRESH_TOKEN
+    ~~~ 
+
+externalDocs:
+  description: "Perfect Venue Help Center"
+  url: 'https://help.perfectvenue.com/knowledge'
+tags:
+  - name: Venue
+    description: "Venue operations"
+x-tagGroups:
+  - name: API Reference
+    tags:
+      - Venues
+servers:
+  - url: https://api.perfectvenue.com/api/v1
+paths:
+  '/venues':
+    $ref: 'paths/venues.yaml'
+  '/venues/{venue_id}':
+    $ref: 'paths/venues_{venue_id}.yaml'
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.perfectvenue.com/oauth/authorize
+          tokenUrl: https://api.perfectvenue.com/oauth/token
+          refreshUrl: https://api.perfectvenue.com/oauth/token
+          scopes:
+            public:
+    bearerHttpAuthentication:
+      description: Bearer token using an access token obtained from the authorization server
+      type: http
+      scheme: Bearer
+security:
+  - bearerHttpAuthentication: []

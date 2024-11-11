@@ -1,0 +1,35 @@
+type: object
+required:
+  - id
+  - organization_id
+  - name
+  - timezone
+  - multi_day_enabled
+properties:
+  id:
+    type: string
+    description: The ID of the venue
+    example: venue_kjKibRA_qyCf8g
+  organization_id:
+    type: string
+    description: The ID of the venue's organization
+    example: org_dGXJNypla-vowQ
+  name:
+    type: string
+    description: The name of the venue
+    example: The Lola Rose
+  timezone:
+    type: string
+    description: The venue's timezone
+    example: America/New_York
+  website_url:
+    type: string
+    format: url
+    description: The venue's website
+    example: https://perfectvenue.com
+  multi_day_enabled:
+    type: boolean
+    description: Indicates if the venue supports multi-day events
+    example: true
+  address:
+    $ref: "./Address.yaml"

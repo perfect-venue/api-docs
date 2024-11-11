@@ -1,0 +1,20 @@
+type: object
+properties:
+  street_address1:
+    type: string
+    example: 159 Osinski Crossroad
+  street_address2:
+    type: string
+    example: Suite 255
+  city:
+    type: string
+    example: South Zelda
+  state:
+    type: string
+    example: North Dakota
+  zip:
+    type: string
+    example: "69196"
+  country:
+    type: string
+    example: United States

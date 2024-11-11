@@ -1,0 +1,23 @@
+get:
+  tags:
+    - Venues
+  summary: List venues
+  description: >
+    List venues which the user is a member of. Venue membership can be granted by an
+    organization admin in the Perfect Venue dashboard.
+  operationId: listVenues
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [success]
+              data:
+                type: array
+                items:
+                  $ref: "../components/schemas/Venue.yaml"

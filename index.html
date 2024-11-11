@@ -1,1 +1,543 @@
-<h1>API Docs</h1>
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>API Reference | ReDoc</title>
+  <!-- needed for adaptive design -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <!--
+    ReDoc uses font options from the parent element
+    So override default browser styles
+    -->
+  <style>
+    @font-face {
+      font-family: 'Circular';
+      src: url('https://pvfonts.s3.us-west-2.amazonaws.com/CircularXXWeb-Regular.woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <script src="https://cdn.redoc.ly/redoc/v2.2.0/bundles/redoc.standalone.js"></script><style data-styled="true" data-styled-version="6.1.13">.dFrZq{width:calc(100% - 40%);padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.dFrZq{width:100%;padding:40px 40px;}}/*!sc*/
+.dYLNKi{width:calc(100% - 40%);padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.dYLNKi{width:100%;padding:0px 40px;}}/*!sc*/
+data-styled.g4[id="sc-fAUdSK"]{content:"dFrZq,dYLNKi,"}/*!sc*/
+.bvhSud{padding:40px 0;}/*!sc*/
+.bvhSud:last-child{min-height:calc(100vh + 1px);}/*!sc*/
+.bvhSud>.bvhSud:last-child{min-height:initial;}/*!sc*/
+@media print,screen and (max-width: 75rem){.bvhSud{padding:0;}}/*!sc*/
+.aYCdu{padding:40px 0;position:relative;}/*!sc*/
+.aYCdu:last-child{min-height:calc(100vh + 1px);}/*!sc*/
+.aYCdu>.aYCdu:last-child{min-height:initial;}/*!sc*/
+@media print,screen and (max-width: 75rem){.aYCdu{padding:0;}}/*!sc*/
+.aYCdu:not(:last-of-type):after{position:absolute;bottom:0;width:100%;display:block;content:'';border-bottom:1px solid rgba(0, 0, 0, 0.2);}/*!sc*/
+data-styled.g5[id="sc-dntaoT"]{content:"bvhSud,aYCdu,"}/*!sc*/
+.gOjFGl{width:40%;color:#ffffff;background-color:#263238;padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.gOjFGl{width:100%;padding:40px 40px;}}/*!sc*/
+data-styled.g6[id="sc-ivxoEo"]{content:"gOjFGl,"}/*!sc*/
+.oECKJ{background-color:#263238;}/*!sc*/
+data-styled.g7[id="sc-ghWlax"]{content:"oECKJ,"}/*!sc*/
+.dECWTf{display:flex;width:100%;padding:0;}/*!sc*/
+@media print,screen and (max-width: 75rem){.dECWTf{flex-direction:column;}}/*!sc*/
+data-styled.g8[id="sc-kLhKbu"]{content:"dECWTf,"}/*!sc*/
+.ccHbIw{font-family:Circular;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#333333;}/*!sc*/
+data-styled.g9[id="sc-ixGGxD"]{content:"ccHbIw,"}/*!sc*/
+.yDlFw{font-family:Circular;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;margin:0 0 20px;}/*!sc*/
+data-styled.g10[id="sc-khLCKb"]{content:"yDlFw,"}/*!sc*/
+.fwLsMM{font-family:Circular;font-weight:400;font-size:1.27em;line-height:1.6em;color:#333333;}/*!sc*/
+data-styled.g11[id="sc-dstKZu"]{content:"fwLsMM,"}/*!sc*/
+.zvQzH{color:#ffffff;}/*!sc*/
+data-styled.g12[id="sc-keTIit"]{content:"zvQzH,"}/*!sc*/
+.eJAAZj{border-bottom:1px solid rgba(38, 50, 56, 0.3);margin:1em 0 1em 0;color:rgba(38, 50, 56, 0.5);font-weight:normal;text-transform:uppercase;font-size:0.929em;line-height:20px;}/*!sc*/
+data-styled.g13[id="sc-dpBQxM"]{content:"eJAAZj,"}/*!sc*/
+.hbTOAm{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.hbTOAm:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+h1:hover>.hbTOAm::before,h2:hover>.hbTOAm::before,.hbTOAm:hover::before{visibility:visible;}/*!sc*/
+data-styled.g14[id="sc-jwIPbr"]{content:"hbTOAm,"}/*!sc*/
+.gkUOTk{height:18px;width:18px;min-width:18px;vertical-align:middle;float:right;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.bEpxpV{height:1.3em;width:1.3em;min-width:1.3em;vertical-align:middle;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.hmCwJW{height:1.5em;width:1.5em;min-width:1.5em;vertical-align:middle;float:left;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.hmCwJW polygon{fill:#1d8127;}/*!sc*/
+.fmmJjS{height:20px;width:20px;min-width:20px;vertical-align:middle;float:right;transition:transform 0.2s ease-out;transform:rotateZ(0);}/*!sc*/
+.fmmJjS polygon{fill:white;}/*!sc*/
+.kVOWjS{height:1.5em;width:1.5em;min-width:1.5em;vertical-align:middle;float:left;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.kVOWjS polygon{fill:#d41f1c;}/*!sc*/
+data-styled.g15[id="sc-cHqXqK"]{content:"gkUOTk,bEpxpV,hmCwJW,fmmJjS,kVOWjS,"}/*!sc*/
+.iyKqKI{border-left:1px solid #7c7cbb;box-sizing:border-box;position:relative;padding:10px 10px 10px 0;}/*!sc*/
+@media screen and (max-width: 50rem){.iyKqKI{display:block;overflow:hidden;}}/*!sc*/
+tr:first-of-type>.iyKqKI,tr.last>.iyKqKI{border-left-width:0;background-position:top left;background-repeat:no-repeat;background-size:1px 100%;}/*!sc*/
+tr:first-of-type>.iyKqKI{background-image:linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 22px,
+      #7c7cbb 22px,
+      #7c7cbb 100%
+    );}/*!sc*/
+tr.last>.iyKqKI{background-image:linear-gradient(
+      to bottom,
+      #7c7cbb 0%,
+      #7c7cbb 22px,
+      transparent 22px,
+      transparent 100%
+    );}/*!sc*/
+tr.last+tr>.iyKqKI{border-left-color:transparent;}/*!sc*/
+tr.last:first-child>.iyKqKI{background:none;border-left-color:transparent;}/*!sc*/
+data-styled.g18[id="sc-ovuCP"]{content:"iyKqKI,"}/*!sc*/
+.iQpMVv{vertical-align:top;line-height:20px;white-space:nowrap;font-size:13px;font-family:Courier,monospace;}/*!sc*/
+.iQpMVv.deprecated{text-decoration:line-through;color:#707070;}/*!sc*/
+data-styled.g20[id="sc-eauhAA"]{content:"iQpMVv,"}/*!sc*/
+.cHXoZJ{border-bottom:1px solid #9fb4be;padding:10px 0;width:75%;box-sizing:border-box;}/*!sc*/
+tr.expanded .cHXoZJ{border-bottom:none;}/*!sc*/
+@media screen and (max-width: 50rem){.cHXoZJ{padding:0 20px;border-bottom:none;border-left:1px solid #7c7cbb;}tr.last>.cHXoZJ{border-left:none;}}/*!sc*/
+data-styled.g21[id="sc-fFoeYl"]{content:"cHXoZJ,"}/*!sc*/
+.kPDxnK{color:#7c7cbb;font-family:Courier,monospace;margin-right:10px;}/*!sc*/
+.kPDxnK::before{content:'';display:inline-block;vertical-align:middle;width:10px;height:1px;background:#7c7cbb;}/*!sc*/
+.kPDxnK::after{content:'';display:inline-block;vertical-align:middle;width:1px;background:#7c7cbb;height:7px;}/*!sc*/
+data-styled.g22[id="sc-gQaihK"]{content:"kPDxnK,"}/*!sc*/
+.eNFxPe{border-collapse:separate;border-radius:3px;font-size:14px;border-spacing:0;width:100%;}/*!sc*/
+.eNFxPe >tr{vertical-align:middle;}/*!sc*/
+@media screen and (max-width: 50rem){.eNFxPe{display:block;}.eNFxPe >tr,.eNFxPe >tbody>tr{display:block;}}/*!sc*/
+@media screen and (max-width: 50rem) and (-ms-high-contrast:none){.eNFxPe td{float:left;width:100%;}}/*!sc*/
+.eNFxPe .sc-iuUfFv,.eNFxPe .sc-iuUfFv .sc-iuUfFv .sc-iuUfFv,.eNFxPe .sc-iuUfFv .sc-iuUfFv .sc-iuUfFv .sc-iuUfFv .sc-iuUfFv{margin:1em;margin-right:0;background:#fafafa;}/*!sc*/
+.eNFxPe .sc-iuUfFv .sc-iuUfFv,.eNFxPe .sc-iuUfFv .sc-iuUfFv .sc-iuUfFv .sc-iuUfFv,.eNFxPe .sc-iuUfFv .sc-iuUfFv .sc-iuUfFv .sc-iuUfFv .sc-iuUfFv .sc-iuUfFv{background:#ffffff;}/*!sc*/
+data-styled.g24[id="sc-dprtRQ"]{content:"eNFxPe,"}/*!sc*/
+.fbQvpV >ul{list-style:none;padding:0;margin:0;margin:0 -5px;}/*!sc*/
+.fbQvpV >ul >li{padding:5px 10px;display:inline-block;background-color:#11171a;border-bottom:1px solid rgba(0, 0, 0, 0.5);cursor:pointer;text-align:center;outline:none;color:#ccc;margin:0 5px 5px 5px;border:1px solid #07090b;border-radius:5px;min-width:60px;font-size:0.9em;font-weight:bold;}/*!sc*/
+.fbQvpV >ul >li.react-tabs__tab--selected{color:#333333;background:#ffffff;}/*!sc*/
+.fbQvpV >ul >li.react-tabs__tab--selected:focus{outline:auto;}/*!sc*/
+.fbQvpV >ul >li:only-child{flex:none;min-width:100px;}/*!sc*/
+.fbQvpV >ul >li.tab-success{color:#1d8127;}/*!sc*/
+.fbQvpV >ul >li.tab-redirect{color:#ffa500;}/*!sc*/
+.fbQvpV >ul >li.tab-info{color:#87ceeb;}/*!sc*/
+.fbQvpV >ul >li.tab-error{color:#d41f1c;}/*!sc*/
+.fbQvpV >.react-tabs__tab-panel{background:#11171a;}/*!sc*/
+.fbQvpV >.react-tabs__tab-panel>div,.fbQvpV >.react-tabs__tab-panel>pre{padding:20px;margin:0;}/*!sc*/
+.fbQvpV >.react-tabs__tab-panel>div>pre{padding:0;}/*!sc*/
+data-styled.g30[id="sc-bMTdWJ"]{content:"fbQvpV,"}/*!sc*/
+.drsioI code[class*='language-'],.drsioI pre[class*='language-']{text-shadow:0 -0.1em 0.2em black;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none;}/*!sc*/
+@media print{.drsioI code[class*='language-'],.drsioI pre[class*='language-']{text-shadow:none;}}/*!sc*/
+.drsioI pre[class*='language-']{padding:1em;margin:0.5em 0;overflow:auto;}/*!sc*/
+.drsioI .token.comment,.drsioI .token.prolog,.drsioI .token.doctype,.drsioI .token.cdata{color:hsl(30, 20%, 50%);}/*!sc*/
+.drsioI .token.punctuation{opacity:0.7;}/*!sc*/
+.drsioI .namespace{opacity:0.7;}/*!sc*/
+.drsioI .token.property,.drsioI .token.tag,.drsioI .token.number,.drsioI .token.constant,.drsioI .token.symbol{color:#4a8bb3;}/*!sc*/
+.drsioI .token.boolean{color:#e64441;}/*!sc*/
+.drsioI .token.selector,.drsioI .token.attr-name,.drsioI .token.string,.drsioI .token.char,.drsioI .token.builtin,.drsioI .token.inserted{color:#a0fbaa;}/*!sc*/
+.drsioI .token.selector+a,.drsioI .token.attr-name+a,.drsioI .token.string+a,.drsioI .token.char+a,.drsioI .token.builtin+a,.drsioI .token.inserted+a,.drsioI .token.selector+a:visited,.drsioI .token.attr-name+a:visited,.drsioI .token.string+a:visited,.drsioI .token.char+a:visited,.drsioI .token.builtin+a:visited,.drsioI .token.inserted+a:visited{color:#4ed2ba;text-decoration:underline;}/*!sc*/
+.drsioI .token.property.string{color:white;}/*!sc*/
+.drsioI .token.operator,.drsioI .token.entity,.drsioI .token.url,.drsioI .token.variable{color:hsl(40, 90%, 60%);}/*!sc*/
+.drsioI .token.atrule,.drsioI .token.attr-value,.drsioI .token.keyword{color:hsl(350, 40%, 70%);}/*!sc*/
+.drsioI .token.regex,.drsioI .token.important{color:#e90;}/*!sc*/
+.drsioI .token.important,.drsioI .token.bold{font-weight:bold;}/*!sc*/
+.drsioI .token.italic{font-style:italic;}/*!sc*/
+.drsioI .token.entity{cursor:help;}/*!sc*/
+.drsioI .token.deleted{color:red;}/*!sc*/
+data-styled.g32[id="sc-epnzzT"]{content:"drsioI,"}/*!sc*/
+.eWqsOh{opacity:0.7;transition:opacity 0.3s ease;text-align:right;}/*!sc*/
+.eWqsOh:focus-within{opacity:1;}/*!sc*/
+.eWqsOh >button{background-color:transparent;border:0;color:inherit;padding:2px 10px;font-family:Circular;font-size:14px;line-height:1.5em;cursor:pointer;outline:0;}/*!sc*/
+.eWqsOh >button :hover,.eWqsOh >button :focus{background:rgba(255, 255, 255, 0.1);}/*!sc*/
+data-styled.g33[id="sc-uYFMi"]{content:"eWqsOh,"}/*!sc*/
+.cpBPUN{position:relative;}/*!sc*/
+data-styled.g37[id="sc-dEkLRj"]{content:"cpBPUN,"}/*!sc*/
+.jcyPYx{font-family:Circular;font-weight:400;line-height:1.5em;}/*!sc*/
+.jcyPYx p:last-child{margin-bottom:0;}/*!sc*/
+.jcyPYx h1{font-family:Circular;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#32329f;margin-top:0;}/*!sc*/
+.jcyPYx h2{font-family:Circular;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.jcyPYx code{color:#e53935;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.jcyPYx pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.jcyPYx pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.jcyPYx pre code:before,.jcyPYx pre code:after{content:none;}/*!sc*/
+.jcyPYx blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.jcyPYx img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.jcyPYx ul,.jcyPYx ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.jcyPYx ul ul,.jcyPYx ol ul,.jcyPYx ul ol,.jcyPYx ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.jcyPYx table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.jcyPYx table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.jcyPYx table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.jcyPYx table th,.jcyPYx table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.jcyPYx table th{text-align:left;font-weight:bold;}/*!sc*/
+.jcyPYx .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.jcyPYx .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.jcyPYx h1:hover>.share-link::before,.jcyPYx h2:hover>.share-link::before,.jcyPYx .share-link:hover::before{visibility:visible;}/*!sc*/
+.jcyPYx a{text-decoration:auto;color:#32329f;}/*!sc*/
+.jcyPYx a:visited{color:#32329f;}/*!sc*/
+.jcyPYx a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+.bsnmaX{font-family:Circular;font-weight:400;line-height:1.5em;}/*!sc*/
+.bsnmaX p:last-child{margin-bottom:0;}/*!sc*/
+.bsnmaX p:first-child{margin-top:0;}/*!sc*/
+.bsnmaX p:last-child{margin-bottom:0;}/*!sc*/
+.bsnmaX h1{font-family:Circular;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#32329f;margin-top:0;}/*!sc*/
+.bsnmaX h2{font-family:Circular;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.bsnmaX code{color:#e53935;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.bsnmaX pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.bsnmaX pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.bsnmaX pre code:before,.bsnmaX pre code:after{content:none;}/*!sc*/
+.bsnmaX blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.bsnmaX img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.bsnmaX ul,.bsnmaX ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.bsnmaX ul ul,.bsnmaX ol ul,.bsnmaX ul ol,.bsnmaX ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.bsnmaX table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.bsnmaX table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.bsnmaX table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.bsnmaX table th,.bsnmaX table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.bsnmaX table th{text-align:left;font-weight:bold;}/*!sc*/
+.bsnmaX .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.bsnmaX .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.bsnmaX h1:hover>.share-link::before,.bsnmaX h2:hover>.share-link::before,.bsnmaX .share-link:hover::before{visibility:visible;}/*!sc*/
+.bsnmaX a{text-decoration:auto;color:#32329f;}/*!sc*/
+.bsnmaX a:visited{color:#32329f;}/*!sc*/
+.bsnmaX a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+data-styled.g42[id="sc-eMwmJz"]{content:"jcyPYx,bsnmaX,"}/*!sc*/
+.jtjIAv{display:inline;}/*!sc*/
+data-styled.g43[id="sc-drVZOg"]{content:"jtjIAv,"}/*!sc*/
+.ezdXRP{position:relative;}/*!sc*/
+data-styled.g44[id="sc-eWPXlR"]{content:"ezdXRP,"}/*!sc*/
+.mMhCU:hover>.sc-uYFMi{opacity:1;}/*!sc*/
+data-styled.g49[id="sc-eDHQDy"]{content:"mMhCU,"}/*!sc*/
+.iyEpFV{font-family:Courier,monospace;font-size:13px;white-space:pre;contain:content;overflow-x:auto;}/*!sc*/
+.iyEpFV .redoc-json code>.collapser{display:none;pointer-events:none;}/*!sc*/
+.iyEpFV .callback-function{color:gray;}/*!sc*/
+.iyEpFV .collapser:after{content:'-';cursor:pointer;}/*!sc*/
+.iyEpFV .collapsed>.collapser:after{content:'+';cursor:pointer;}/*!sc*/
+.iyEpFV .ellipsis:after{content:' … ';}/*!sc*/
+.iyEpFV .collapsible{margin-left:2em;}/*!sc*/
+.iyEpFV .hoverable{padding-top:1px;padding-bottom:1px;padding-left:2px;padding-right:2px;border-radius:2px;}/*!sc*/
+.iyEpFV .hovered{background-color:rgba(235, 238, 249, 1);}/*!sc*/
+.iyEpFV .collapser{background-color:transparent;border:0;color:#fff;font-family:Courier,monospace;font-size:13px;padding-right:6px;padding-left:6px;padding-top:0;padding-bottom:0;display:flex;align-items:center;justify-content:center;width:15px;height:15px;position:absolute;top:4px;left:-1.5em;cursor:default;user-select:none;-webkit-user-select:none;padding:2px;}/*!sc*/
+.iyEpFV .collapser:focus{outline-color:#fff;outline-style:dotted;outline-width:1px;}/*!sc*/
+.iyEpFV ul{list-style-type:none;padding:0px;margin:0px 0px 0px 26px;}/*!sc*/
+.iyEpFV li{position:relative;display:block;}/*!sc*/
+.iyEpFV .hoverable{display:inline-block;}/*!sc*/
+.iyEpFV .selected{outline-style:solid;outline-width:1px;outline-style:dotted;}/*!sc*/
+.iyEpFV .collapsed>.collapsible{display:none;}/*!sc*/
+.iyEpFV .ellipsis{display:none;}/*!sc*/
+.iyEpFV .collapsed>.ellipsis{display:inherit;}/*!sc*/
+data-styled.g50[id="sc-giBObj"]{content:"iyEpFV,"}/*!sc*/
+.bJmRjH{padding:0.9em;background-color:rgba(38,50,56,0.4);margin:0 0 10px 0;display:block;font-family:Circular;font-size:0.929em;line-height:1.5em;}/*!sc*/
+data-styled.g51[id="sc-UblHX"]{content:"bJmRjH,"}/*!sc*/
+.kFTBSF{font-family:Circular;font-size:12px;position:absolute;z-index:1;top:-11px;left:12px;font-weight:600;color:rgba(255,255,255,0.7);}/*!sc*/
+data-styled.g52[id="sc-fufdwm"]{content:"kFTBSF,"}/*!sc*/
+.dIDLbO{position:relative;}/*!sc*/
+data-styled.g53[id="sc-Rjrgp"]{content:"dIDLbO,"}/*!sc*/
+.kqHNPM{margin-top:15px;}/*!sc*/
+data-styled.g56[id="sc-FFETS"]{content:"kqHNPM,"}/*!sc*/
+.hPAOR{vertical-align:middle;font-size:13px;line-height:20px;}/*!sc*/
+data-styled.g58[id="sc-CNKsk"]{content:"hPAOR,"}/*!sc*/
+.dWKYKL{color:rgba(102,102,102,0.9);}/*!sc*/
+data-styled.g59[id="sc-cqgMZH"]{content:"dWKYKL,"}/*!sc*/
+.bIEFFi{color:#666;}/*!sc*/
+data-styled.g60[id="sc-gQkENW"]{content:"bIEFFi,"}/*!sc*/
+.dWOvGG{margin:1em 0;}/*!sc*/
+.dWOvGG a{text-decoration:auto;color:#32329f;}/*!sc*/
+.dWOvGG a:visited{color:#32329f;}/*!sc*/
+.dWOvGG a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+data-styled.g70[id="sc-jdeYMN"]{content:"dWOvGG,"}/*!sc*/
+.dIXVzO:after{content:' and ';font-weight:normal;}/*!sc*/
+.dIXVzO:last-child:after{content:none;}/*!sc*/
+.dIXVzO a{text-decoration:auto;color:#32329f;}/*!sc*/
+.dIXVzO a:visited{color:#32329f;}/*!sc*/
+.dIXVzO a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+data-styled.g80[id="sc-bqvdXA"]{content:"dIXVzO,"}/*!sc*/
+.eqXCjK{white-space:nowrap;}/*!sc*/
+.eqXCjK:after{content:' or ';white-space:pre;}/*!sc*/
+.eqXCjK:last-child:after,.eqXCjK:only-child:after{content:none;}/*!sc*/
+.eqXCjK a{text-decoration:auto;color:#32329f;}/*!sc*/
+.eqXCjK a:visited{color:#32329f;}/*!sc*/
+.eqXCjK a:hover{color:#6868cf;text-decoration:auto;}/*!sc*/
+data-styled.g81[id="sc-irPVuy"]{content:"eqXCjK,"}/*!sc*/
+.jXOga-d{flex:1 1 auto;cursor:pointer;}/*!sc*/
+data-styled.g82[id="sc-jWJSSj"]{content:"jXOga-d,"}/*!sc*/
+.gQOXJB{width:75%;text-overflow:ellipsis;border-radius:4px;overflow:hidden;}/*!sc*/
+@media screen and (max-width: 50rem){.gQOXJB{margin-top:10px;}}/*!sc*/
+data-styled.g83[id="sc-iCjFWQ"]{content:"gQOXJB,"}/*!sc*/
+.ffSXYc{display:inline-block;margin:0;}/*!sc*/
+data-styled.g84[id="sc-khdDuB"]{content:"ffSXYc,"}/*!sc*/
+.dyzdIR{width:100%;display:flex;margin:1em 0;flex-direction:row;}/*!sc*/
+@media screen and (max-width: 50rem){.dyzdIR{flex-direction:column;}}/*!sc*/
+data-styled.g85[id="sc-hGNhLO"]{content:"dyzdIR,"}/*!sc*/
+.dZsYqS{margin-top:0;margin-bottom:0.5em;}/*!sc*/
+data-styled.g91[id="sc-geoRQH"]{content:"dZsYqS,"}/*!sc*/
+.enkzRg{border:1px solid #32329f;color:#32329f;font-weight:normal;margin-left:0.5em;padding:4px 8px 4px;display:inline-block;text-decoration:none;cursor:pointer;}/*!sc*/
+data-styled.g92[id="sc-kEsJEW"]{content:"enkzRg,"}/*!sc*/
+.bcPxPq::before{content:'|';display:inline-block;opacity:0.5;width:15px;text-align:center;}/*!sc*/
+.bcPxPq:last-child::after{display:none;}/*!sc*/
+data-styled.g93[id="sc-gbwXoZ"]{content:"bcPxPq,"}/*!sc*/
+.gmEXff{overflow:hidden;}/*!sc*/
+data-styled.g94[id="sc-kBAPdo"]{content:"gmEXff,"}/*!sc*/
+.eeVPfW{display:flex;flex-wrap:wrap;margin-left:-15px;}/*!sc*/
+data-styled.g95[id="sc-ftmehX"]{content:"eeVPfW,"}/*!sc*/
+.cHMLAY{max-height:260px;max-width:260px;padding:20px;width:100%;display:block;}/*!sc*/
+data-styled.g96[id="sc-jTpVWm"]{content:"cHMLAY,"}/*!sc*/
+.dzdmjb{text-align:center;}/*!sc*/
+data-styled.g97[id="sc-fqujGp"]{content:"dzdmjb,"}/*!sc*/
+.iYFQel{display:inline-block;}/*!sc*/
+data-styled.g98[id="sc-jQybuE"]{content:"iYFQel,"}/*!sc*/
+.bbQame{width:9ex;display:inline-block;height:13px;line-height:13px;background-color:#333;border-radius:3px;background-repeat:no-repeat;background-position:6px 4px;font-size:7px;font-family:Verdana,sans-serif;color:white;text-transform:uppercase;text-align:center;font-weight:bold;vertical-align:middle;margin-right:6px;margin-top:2px;}/*!sc*/
+.bbQame.get{background-color:#2F8132;}/*!sc*/
+.bbQame.post{background-color:#186FAF;}/*!sc*/
+.bbQame.put{background-color:#95507c;}/*!sc*/
+.bbQame.options{background-color:#947014;}/*!sc*/
+.bbQame.patch{background-color:#bf581d;}/*!sc*/
+.bbQame.delete{background-color:#cc3333;}/*!sc*/
+.bbQame.basic{background-color:#707070;}/*!sc*/
+.bbQame.link{background-color:#07818F;}/*!sc*/
+.bbQame.head{background-color:#A23DAD;}/*!sc*/
+.bbQame.hook{background-color:#32329f;}/*!sc*/
+.bbQame.schema{background-color:#707070;}/*!sc*/
+data-styled.g99[id="sc-erSfwj"]{content:"bbQame,"}/*!sc*/
+.dXwhdL{margin:0;padding:0;}/*!sc*/
+.dXwhdL:first-child{padding-bottom:32px;}/*!sc*/
+.sc-iRVXky .sc-iRVXky{font-size:0.929em;}/*!sc*/
+.kUyAbS{margin:0;padding:0;display:none;}/*!sc*/
+.kUyAbS:first-child{padding-bottom:32px;}/*!sc*/
+.sc-iRVXky .sc-iRVXky{font-size:0.929em;}/*!sc*/
+data-styled.g100[id="sc-iRVXky"]{content:"dXwhdL,kUyAbS,"}/*!sc*/
+.gSwPLF{list-style:none inside none;overflow:hidden;text-overflow:ellipsis;padding:0;}/*!sc*/
+.ghRwPP{list-style:none inside none;overflow:hidden;text-overflow:ellipsis;padding:0;margin-top:15px;}/*!sc*/
+data-styled.g101[id="sc-ljhlHD"]{content:"gSwPLF,ghRwPP,"}/*!sc*/
+.bhzHpy{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;display:flex;justify-content:space-between;font-family:Circular;font-size:0.929em;text-transform:none;background-color:#fafafa;}/*!sc*/
+.bhzHpy:hover{color:#32329f;background-color:#e1e1e1;}/*!sc*/
+.bhzHpy .sc-cHqXqK{height:1.5em;width:1.5em;}/*!sc*/
+.bhzHpy .sc-cHqXqK polygon{fill:#333333;}/*!sc*/
+.gcjlje{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;padding-left:40px;display:flex;justify-content:space-between;font-family:Circular;background-color:#fafafa;}/*!sc*/
+.gcjlje:hover{color:#32329f;background-color:#ededed;}/*!sc*/
+.gcjlje .sc-cHqXqK{height:1.5em;width:1.5em;}/*!sc*/
+.gcjlje .sc-cHqXqK polygon{fill:#333333;}/*!sc*/
+.eZPyAO{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;display:flex;justify-content:space-between;font-family:Circular;opacity:0.7;text-transform:uppercase;font-size:0.8em;padding-bottom:0;cursor:default;background-color:#fafafa;}/*!sc*/
+.eZPyAO .sc-cHqXqK{height:1.5em;width:1.5em;}/*!sc*/
+.eZPyAO .sc-cHqXqK polygon{fill:#333333;}/*!sc*/
+.firOEQ{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;display:flex;justify-content:space-between;font-family:Circular;background-color:#fafafa;}/*!sc*/
+.firOEQ:hover{color:#32329f;background-color:#ededed;}/*!sc*/
+.firOEQ .sc-cHqXqK{height:1.5em;width:1.5em;}/*!sc*/
+.firOEQ .sc-cHqXqK polygon{fill:#333333;}/*!sc*/
+data-styled.g102[id="sc-bAEjGW"]{content:"bhzHpy,gcjlje,eZPyAO,firOEQ,"}/*!sc*/
+.bBONey{display:inline-block;vertical-align:middle;width:calc(100% - 38px);overflow:hidden;text-overflow:ellipsis;}/*!sc*/
+data-styled.g103[id="sc-enMaOJ"]{content:"bBONey,"}/*!sc*/
+.fxirIR{font-size:0.8em;margin-top:10px;text-align:center;position:fixed;width:260px;bottom:0;background:#fafafa;}/*!sc*/
+.fxirIR a,.fxirIR a:visited,.fxirIR a:hover{color:#333333!important;padding:5px 0;border-top:1px solid #e1e1e1;text-decoration:none;display:flex;align-items:center;justify-content:center;}/*!sc*/
+.fxirIR img{width:15px;margin-right:5px;}/*!sc*/
+@media screen and (max-width: 50rem){.fxirIR{width:100%;}}/*!sc*/
+data-styled.g104[id="sc-fUEImY"]{content:"fxirIR,"}/*!sc*/
+.dWZoid{cursor:pointer;position:relative;margin-bottom:5px;}/*!sc*/
+data-styled.g110[id="sc-duWCru"]{content:"dWZoid,"}/*!sc*/
+.iqHzp{font-family:Courier,monospace;margin-left:10px;flex:1;overflow-x:hidden;text-overflow:ellipsis;}/*!sc*/
+data-styled.g111[id="sc-etPtWW"]{content:"iqHzp,"}/*!sc*/
+.ebcgbH{outline:0;color:inherit;width:100%;text-align:left;cursor:pointer;padding:10px 30px 10px 20px;border-radius:4px 4px 0 0;background-color:#11171a;display:flex;white-space:nowrap;align-items:center;border:1px solid transparent;border-bottom:0;transition:border-color 0.25s ease;}/*!sc*/
+.ebcgbH ..sc-etPtWW{color:#ffffff;}/*!sc*/
+.ebcgbH:focus{box-shadow:inset 0 2px 2px rgba(0, 0, 0, 0.45),0 2px 0 rgba(128, 128, 128, 0.25);}/*!sc*/
+data-styled.g112[id="sc-iPHsxv"]{content:"ebcgbH,"}/*!sc*/
+.dviJfg{font-size:0.929em;line-height:20px;background-color:#2F8132;color:#ffffff;padding:3px 10px;text-transform:uppercase;font-family:Circular;margin:0;}/*!sc*/
+data-styled.g113[id="sc-txhaY"]{content:"dviJfg,"}/*!sc*/
+.ddApzj{position:absolute;width:100%;z-index:100;background:#fafafa;color:#263238;box-sizing:border-box;box-shadow:0 0 6px rgba(0, 0, 0, 0.33);overflow:hidden;border-bottom-left-radius:4px;border-bottom-right-radius:4px;transition:all 0.25s ease;visibility:hidden;transform:translateY(-50%) scaleY(0);}/*!sc*/
+data-styled.g114[id="sc-ePpfBx"]{content:"ddApzj,"}/*!sc*/
+.evaCJX{padding:10px;}/*!sc*/
+data-styled.g115[id="sc-dwGkES"]{content:"evaCJX,"}/*!sc*/
+.gufODt{padding:5px;border:1px solid #ccc;background:#fff;word-break:break-all;color:#32329f;}/*!sc*/
+.gufODt >span{color:#333333;}/*!sc*/
+data-styled.g116[id="sc-hSyjfr"]{content:"gufODt,"}/*!sc*/
+.cnBopK{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#1d8127;background-color:rgba(29,129,39,0.07);}/*!sc*/
+.cnBopK:focus{outline:auto #1d8127;}/*!sc*/
+.fhwTMk{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#d41f1c;background-color:rgba(212,31,28,0.07);}/*!sc*/
+.fhwTMk:focus{outline:auto #d41f1c;}/*!sc*/
+data-styled.g119[id="sc-gohMHu"]{content:"cnBopK,fhwTMk,"}/*!sc*/
+.beMorW{vertical-align:top;}/*!sc*/
+data-styled.g122[id="sc-bKXUjo"]{content:"beMorW,"}/*!sc*/
+.dheqgt{font-size:1.3em;padding:0.2em 0;margin:3em 0 1.1em;color:#333333;font-weight:normal;}/*!sc*/
+data-styled.g123[id="sc-edsqmr"]{content:"dheqgt,"}/*!sc*/
+.exRUVh{margin-bottom:30px;}/*!sc*/
+data-styled.g128[id="sc-fantwC"]{content:"exRUVh,"}/*!sc*/
+.isQMci{user-select:none;width:20px;height:20px;align-self:center;display:flex;flex-direction:column;color:#32329f;}/*!sc*/
+data-styled.g129[id="sc-bLmarx"]{content:"isQMci,"}/*!sc*/
+.jmYWik{width:260px;background-color:#fafafa;overflow:hidden;display:flex;flex-direction:column;backface-visibility:hidden;height:100vh;position:sticky;position:-webkit-sticky;top:0;}/*!sc*/
+@media screen and (max-width: 50rem){.jmYWik{position:fixed;z-index:20;width:100%;background:#fafafa;display:none;}}/*!sc*/
+@media print{.jmYWik{display:none;}}/*!sc*/
+data-styled.g130[id="sc-dFqmTM"]{content:"jmYWik,"}/*!sc*/
+.cZPhLc{outline:none;user-select:none;background-color:#f2f2f2;color:#32329f;display:none;cursor:pointer;position:fixed;right:20px;z-index:100;border-radius:50%;box-shadow:0 0 20px rgba(0, 0, 0, 0.3);bottom:44px;width:60px;height:60px;padding:0 20px;}/*!sc*/
+@media screen and (max-width: 50rem){.cZPhLc{display:flex;}}/*!sc*/
+.cZPhLc svg{color:#0065FB;}/*!sc*/
+@media print{.cZPhLc{display:none;}}/*!sc*/
+data-styled.g131[id="sc-eqXzvo"]{content:"cZPhLc,"}/*!sc*/
+.ggqdLN{font-family:Circular;font-size:14px;font-weight:400;line-height:1.5em;color:#333333;display:flex;position:relative;text-align:left;-webkit-font-smoothing:antialiased;font-smoothing:antialiased;text-rendering:optimizeSpeed!important;tap-highlight-color:rgba(0, 0, 0, 0);text-size-adjust:100%;}/*!sc*/
+.ggqdLN *{box-sizing:border-box;-webkit-tap-highlight-color:rgba(255, 255, 255, 0);}/*!sc*/
+data-styled.g132[id="sc-iMPxVN"]{content:"ggqdLN,"}/*!sc*/
+.knmTbM{z-index:1;position:relative;overflow:hidden;width:calc(100% - 260px);contain:layout;}/*!sc*/
+@media print,screen and (max-width: 50rem){.knmTbM{width:100%;}}/*!sc*/
+data-styled.g133[id="sc-jdwyG"]{content:"knmTbM,"}/*!sc*/
+.ifLiBE{background:#263238;position:absolute;top:0;bottom:0;right:0;width:calc((100% - 260px) * 0.4);}/*!sc*/
+@media print,screen and (max-width: 75rem){.ifLiBE{display:none;}}/*!sc*/
+data-styled.g134[id="sc-eEVuZf"]{content:"ifLiBE,"}/*!sc*/
+</style>
+</head>
+
+<body>
+  
+      <div id="redoc"><div class="sc-iMPxVN ggqdLN redoc-wrap"><div class="sc-dFqmTM jmYWik menu-content" style="top:0px;height:calc(100vh - 0px)"><div class="sc-fqujGp dzdmjb"><a href="https://www.perfectvenue.com" class="sc-jQybuE iYFQel"><img src="https://cdn.prod.website-files.com/63d06722a6f6c812bbe32959/63d2fec1c973d398875d5a4e_PV_logo%402x.png" alt="Perfect Venue Logo" class="sc-jTpVWm cHMLAY"/></a></div><div class="sc-dEkLRj cpBPUN scrollbar-container undefined"><ul role="menu" class="sc-iRVXky dXwhdL"><li tabindex="0" depth="1" data-item-id="section/Introduction" role="menuitem" class="sc-ljhlHD gSwPLF"><label class="sc-bAEjGW bhzHpy -depth1"><span width="calc(100% - 38px)" title="Introduction" class="sc-enMaOJ bBONey">Introduction</span></label></li><li tabindex="0" depth="1" data-item-id="section/Authentication" role="menuitem" class="sc-ljhlHD gSwPLF"><label class="sc-bAEjGW bhzHpy -depth1"><span width="calc(100% - 38px)" title="Authentication" class="sc-enMaOJ bBONey">Authentication</span><svg class="sc-cHqXqK gkUOTk" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-iRVXky kUyAbS"><li tabindex="0" depth="2" data-item-id="section/Authentication/Authorizing-the-app" role="menuitem" class="sc-ljhlHD gSwPLF"><label class="sc-bAEjGW gcjlje -depth2"><span width="calc(100% - 38px)" title="Authorizing the app" class="sc-enMaOJ bBONey">Authorizing the app</span></label></li><li tabindex="0" depth="2" data-item-id="section/Authentication/Obtaining-an-access-token" role="menuitem" class="sc-ljhlHD gSwPLF"><label class="sc-bAEjGW gcjlje -depth2"><span width="calc(100% - 38px)" title="Obtaining an access token" class="sc-enMaOJ bBONey">Obtaining an access token</span></label></li><li tabindex="0" depth="2" data-item-id="section/Authentication/Using-access-tokens" role="menuitem" class="sc-ljhlHD gSwPLF"><label class="sc-bAEjGW gcjlje -depth2"><span width="calc(100% - 38px)" title="Using access tokens" class="sc-enMaOJ bBONey">Using access tokens</span></label></li><li tabindex="0" depth="2" data-item-id="section/Authentication/Using-refresh-tokens" role="menuitem" class="sc-ljhlHD gSwPLF"><label class="sc-bAEjGW gcjlje -depth2"><span width="calc(100% - 38px)" title="Using refresh tokens" class="sc-enMaOJ bBONey">Using refresh tokens</span></label></li></ul></li><li tabindex="0" depth="0" data-item-id="group/API-Reference" role="menuitem" class="sc-ljhlHD ghRwPP"><label class="sc-bAEjGW eZPyAO -depth0"><span width="calc(100% - 38px)" title="API Reference" class="sc-enMaOJ bBONey">API Reference</span></label><ul class="sc-iRVXky dXwhdL"><li tabindex="0" depth="1" data-item-id="tag/Venues" role="menuitem" class="sc-ljhlHD gSwPLF"><label class="sc-bAEjGW bhzHpy -depth1"><span width="calc(100% - 38px)" title="Venues" class="sc-enMaOJ bBONey">Venues</span><svg class="sc-cHqXqK gkUOTk" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-iRVXky kUyAbS"><li tabindex="0" depth="2" data-item-id="tag/Venues/operation/listVenues" role="menuitem" class="sc-ljhlHD gSwPLF"><label class="sc-bAEjGW firOEQ -depth2"><span type="get" class="sc-erSfwj bbQame operation-type get">get</span><span tabindex="0" width="calc(100% - 38px)" class="sc-enMaOJ bBONey">List venues</span></label></li><li tabindex="0" depth="2" data-item-id="tag/Venues/operation/getVenue" role="menuitem" class="sc-ljhlHD gSwPLF"><label class="sc-bAEjGW firOEQ -depth2"><span type="get" class="sc-erSfwj bbQame operation-type get">get</span><span tabindex="0" width="calc(100% - 38px)" class="sc-enMaOJ bBONey">Get venue</span></label></li></ul></li></ul></li></ul><div class="sc-fUEImY fxirIR"><a target="_blank" rel="noopener noreferrer" href="https://redocly.com/redoc/">API docs by Redocly</a></div></div></div><div class="sc-eqXzvo cZPhLc"><div class="sc-bLmarx isQMci"><svg class="" style="transform:translate(2px, -4px) rotate(180deg);transition:transform 0.2s ease" viewBox="0 0 926.23699 573.74994" version="1.1" x="0px" y="0px" width="15" height="15"><g transform="translate(904.92214,-879.1482)"><path d="
+          m -673.67664,1221.6502 -231.2455,-231.24803 55.6165,
+          -55.627 c 30.5891,-30.59485 56.1806,-55.627 56.8701,-55.627 0.6894,
+          0 79.8637,78.60862 175.9427,174.68583 l 174.6892,174.6858 174.6892,
+          -174.6858 c 96.079,-96.07721 175.253196,-174.68583 175.942696,
+          -174.68583 0.6895,0 26.281,25.03215 56.8701,
+          55.627 l 55.6165,55.627 -231.245496,231.24803 c -127.185,127.1864
+          -231.5279,231.248 -231.873,231.248 -0.3451,0 -104.688,
+          -104.0616 -231.873,-231.248 z
+        " fill="currentColor"></path></g></svg><svg class="" style="transform:translate(2px, 4px);transition:transform 0.2s ease" viewBox="0 0 926.23699 573.74994" version="1.1" x="0px" y="0px" width="15" height="15"><g transform="translate(904.92214,-879.1482)"><path d="
+          m -673.67664,1221.6502 -231.2455,-231.24803 55.6165,
+          -55.627 c 30.5891,-30.59485 56.1806,-55.627 56.8701,-55.627 0.6894,
+          0 79.8637,78.60862 175.9427,174.68583 l 174.6892,174.6858 174.6892,
+          -174.6858 c 96.079,-96.07721 175.253196,-174.68583 175.942696,
+          -174.68583 0.6895,0 26.281,25.03215 56.8701,
+          55.627 l 55.6165,55.627 -231.245496,231.24803 c -127.185,127.1864
+          -231.5279,231.248 -231.873,231.248 -0.3451,0 -104.688,
+          -104.0616 -231.873,-231.248 z
+        " fill="currentColor"></path></g></svg></div></div><div class="sc-jdwyG knmTbM api-content"><div class="sc-dntaoT bvhSud"><div class="sc-kLhKbu dECWTf"><div class="sc-fAUdSK dFrZq api-info"><h1 class="sc-ixGGxD sc-geoRQH ccHbIw dZsYqS">Perfect Venue API Docs<!-- --> <span>(<!-- -->1.0.0<!-- -->)</span></h1><p>Download OpenAPI specification<!-- -->:<a download="openapi.json" target="_blank" class="sc-kEsJEW enkzRg">Download</a></p><div class="sc-epnzzT sc-eMwmJz drsioI jcyPYx"><div class="sc-kBAPdo gmEXff"><div class="sc-ftmehX eeVPfW"><span class="sc-gbwXoZ bcPxPq">Contact us<!-- -->:<!-- --> <a href="mailto:eng@perfectvenue.com">eng@perfectvenue.com</a></span> <span class="sc-gbwXoZ bcPxPq">URL: <a href="https://www.perfectvenue.com">https://www.perfectvenue.com</a></span> <!-- --> <span class="sc-gbwXoZ bcPxPq"><a href="https://www.perfectvenue.com/terms-of-service">Terms of Service</a></span></div></div></div><div data-role="redoc-summary" html="" class="sc-epnzzT sc-eMwmJz drsioI jcyPYx"></div><div data-role="redoc-description" html="" class="sc-epnzzT sc-eMwmJz drsioI jcyPYx"></div><div class="sc-jdeYMN dWOvGG"><a href="https://help.perfectvenue.com/knowledge">Perfect Venue Help Center</a></div></div></div></div><div id="section/Introduction" data-section-id="section/Introduction" class="sc-dntaoT bvhSud"><div class="sc-kLhKbu dECWTf"><div class="sc-fAUdSK dFrZq"><h2 class="sc-khLCKb yDlFw"><a class="sc-jwIPbr hbTOAm" href="#section/Introduction" aria-label="section/Introduction"></a>Introduction</h2></div></div><div class="sc-fAUdSK dYLNKi"><div class="sc-epnzzT sc-eMwmJz drsioI jcyPYx redoc-markdown " html="&lt;p&gt;Welcome to the Perfect Venue API docs. This API is available to Perfect Venue partners. If you&amp;#39;re interested in building an integration, please reach out to &lt;a href=&quot;mailto:&amp;#101;&amp;#110;&amp;#x67;&amp;#64;&amp;#112;&amp;#101;&amp;#114;&amp;#x66;&amp;#x65;&amp;#x63;&amp;#116;&amp;#x76;&amp;#101;&amp;#x6e;&amp;#117;&amp;#101;&amp;#x2e;&amp;#x63;&amp;#111;&amp;#x6d;&quot;&gt;&amp;#101;&amp;#110;&amp;#x67;&amp;#64;&amp;#112;&amp;#101;&amp;#114;&amp;#x66;&amp;#x65;&amp;#x63;&amp;#116;&amp;#x76;&amp;#101;&amp;#x6e;&amp;#117;&amp;#101;&amp;#x2e;&amp;#x63;&amp;#111;&amp;#x6d;&lt;/a&gt; and we&amp;#39;ll help you get set up.  &lt;/p&gt;
+&lt;p&gt;This site was generated with &lt;a href=&quot;https://github.com/Redocly/Redoc&quot;&gt;Redoc&lt;/a&gt; and the &lt;a href=&quot;https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md&quot;&gt;OpenAPI/Swagger format&lt;/a&gt;.&lt;/p&gt;
+"><p>Welcome to the Perfect Venue API docs. This API is available to Perfect Venue partners. If you&#39;re interested in building an integration, please reach out to <a href="mailto:&#101;&#110;&#x67;&#64;&#112;&#101;&#114;&#x66;&#x65;&#x63;&#116;&#x76;&#101;&#x6e;&#117;&#101;&#x2e;&#x63;&#111;&#x6d;">&#101;&#110;&#x67;&#64;&#112;&#101;&#114;&#x66;&#x65;&#x63;&#116;&#x76;&#101;&#x6e;&#117;&#101;&#x2e;&#x63;&#111;&#x6d;</a> and we&#39;ll help you get set up.  </p>
+<p>This site was generated with <a href="https://github.com/Redocly/Redoc">Redoc</a> and the <a href="https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md">OpenAPI/Swagger format</a>.</p>
+</div></div></div><div id="section/Authentication" data-section-id="section/Authentication" class="sc-dntaoT bvhSud"><div class="sc-kLhKbu dECWTf"><div class="sc-fAUdSK dFrZq"><h2 class="sc-khLCKb yDlFw"><a class="sc-jwIPbr hbTOAm" href="#section/Authentication" aria-label="section/Authentication"></a>Authentication</h2></div></div><div class="sc-fAUdSK dYLNKi"><div class="sc-epnzzT sc-eMwmJz drsioI jcyPYx redoc-markdown " html="&lt;p&gt;The Perfect Venue API uses Bearer tokens for authentication. You can obtain a token by following the OAuth 2.0 authorization code flow, described below.&lt;/p&gt;
+"><p>The Perfect Venue API uses Bearer tokens for authentication. You can obtain a token by following the OAuth 2.0 authorization code flow, described below.</p>
+</div></div></div><div id="section/Authentication/Authorizing-the-app" data-section-id="section/Authentication/Authorizing-the-app" class="sc-dntaoT bvhSud"><div class="sc-kLhKbu dECWTf"><div class="sc-fAUdSK dFrZq"><h2 class="sc-dstKZu fwLsMM"><a class="sc-jwIPbr hbTOAm" href="#section/Authentication/Authorizing-the-app" aria-label="section/Authentication/Authorizing-the-app"></a>Authorizing the app</h2></div></div><div class="sc-fAUdSK dYLNKi"><div class="sc-epnzzT sc-eMwmJz drsioI jcyPYx redoc-markdown " html="&lt;p&gt;Direct the user to the Authorization URL with the following query parameters:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;response_type&lt;/code&gt;: Set to &amp;quot;code&amp;quot;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;client_id&lt;/code&gt;: Your application’s unique client ID, provided during registration&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;redirect_uri&lt;/code&gt;: The URL to which the user will be redirected after authorization&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;scope&lt;/code&gt;: Space-separated list of permissions your application needs&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;state&lt;/code&gt;: (Optional but recommended) A random string to maintain state between the request and callback, helping to prevent &lt;a href=&quot;https://auth0.com/docs/secure/attack-protection/state-parameters&quot;&gt;CSRF attacks&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Example Authorization URL:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  https&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;api&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;perfectvenue&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;com&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;oauth&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;authorize&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;response_type&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;code&lt;span class=&quot;token operator&quot;&gt;&amp;amp;&lt;/span&gt;client_id&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;CLIENT_ID&lt;span class=&quot;token operator&quot;&gt;&amp;amp;&lt;/span&gt;redirect_uri&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;REDIRECT_URI&lt;span class=&quot;token operator&quot;&gt;&amp;amp;&lt;/span&gt;scope&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;venues&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;read&lt;span class=&quot;token operator&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;20&lt;/span&gt;events&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;write&lt;span class=&quot;token operator&quot;&gt;&amp;amp;&lt;/span&gt;state&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;RANDOM_STRING
+&lt;/code&gt;&lt;/pre&gt;
+"><p>Direct the user to the Authorization URL with the following query parameters:</p>
+<ul>
+<li><code>response_type</code>: Set to &quot;code&quot;</li>
+<li><code>client_id</code>: Your application’s unique client ID, provided during registration</li>
+<li><code>redirect_uri</code>: The URL to which the user will be redirected after authorization</li>
+<li><code>scope</code>: Space-separated list of permissions your application needs</li>
+<li><code>state</code>: (Optional but recommended) A random string to maintain state between the request and callback, helping to prevent <a href="https://auth0.com/docs/secure/attack-protection/state-parameters">CSRF attacks</a></li>
+</ul>
+<p>Example Authorization URL:</p>
+<pre><code>  https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>api<span class="token punctuation">.</span>perfectvenue<span class="token punctuation">.</span>com<span class="token operator">/</span>oauth<span class="token operator">/</span>authorize<span class="token operator">?</span>response_type<span class="token operator">=</span>code<span class="token operator">&amp;</span>client_id<span class="token operator">=</span>CLIENT_ID<span class="token operator">&amp;</span>redirect_uri<span class="token operator">=</span>REDIRECT_URI<span class="token operator">&amp;</span>scope<span class="token operator">=</span>venues<span class="token punctuation">:</span>read<span class="token operator">%</span><span class="token number">20</span>events<span class="token punctuation">:</span>write<span class="token operator">&amp;</span>state<span class="token operator">=</span>RANDOM_STRING
+</code></pre>
+</div></div></div><div id="section/Authentication/Obtaining-an-access-token" data-section-id="section/Authentication/Obtaining-an-access-token" class="sc-dntaoT bvhSud"><div class="sc-kLhKbu dECWTf"><div class="sc-fAUdSK dFrZq"><h2 class="sc-dstKZu fwLsMM"><a class="sc-jwIPbr hbTOAm" href="#section/Authentication/Obtaining-an-access-token" aria-label="section/Authentication/Obtaining-an-access-token"></a>Obtaining an access token</h2></div></div><div class="sc-fAUdSK dYLNKi"><div class="sc-epnzzT sc-eMwmJz drsioI jcyPYx redoc-markdown " html="&lt;p&gt;Once the user has authorized your application, they will be redirected to the specified &lt;code&gt;redirect_uri&lt;/code&gt; with a code parameter in the query string.  &lt;/p&gt;
+&lt;p&gt;To exchange this authorization code for an access token, send a POST request to the Token URL with the following setup:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;Authorization&lt;/code&gt; Header: Use Basic HTTP authentication, where the &lt;code&gt;client_id&lt;/code&gt; and &lt;code&gt;client_secret&lt;/code&gt; are
+  combined in the format &lt;code&gt;client_id:client_secret&lt;/code&gt; and Base64 encoded. This encoded value is included in the
+  Authorization header as &lt;code&gt;Basic &amp;lt;encoded_credentials&amp;gt;&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Body Parameters (URL-encoded)  &lt;ul&gt;
+&lt;li&gt;&lt;code&gt;grant_type&lt;/code&gt;: Set to &amp;quot;authorization_code&amp;quot;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;code&lt;/code&gt;: The authorization code received in the redirect&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;redirect_uri&lt;/code&gt;: Must match the &lt;code&gt;redirect_uri&lt;/code&gt; used the previous step&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Example Token Request:  &lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  POST https&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;api&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;perfectvenue&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;com&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;oauth&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;token
+  Authorization&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Basic &lt;span class=&quot;token function&quot;&gt;BASE64_ENCODED&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;client_id&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;client_secret&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  Content&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Type&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; application&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;x&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;www&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;form&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;urlencoded
+
+  grant_type&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;authorization_code&lt;span class=&quot;token operator&quot;&gt;&amp;amp;&lt;/span&gt;code&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;AUTHORIZATION_CODE&lt;span class=&quot;token operator&quot;&gt;&amp;amp;&lt;/span&gt;redirect_uri&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;REDIRECT_URI
+&lt;/code&gt;&lt;/pre&gt;
+"><p>Once the user has authorized your application, they will be redirected to the specified <code>redirect_uri</code> with a code parameter in the query string.  </p>
+<p>To exchange this authorization code for an access token, send a POST request to the Token URL with the following setup:</p>
+<ol>
+<li><code>Authorization</code> Header: Use Basic HTTP authentication, where the <code>client_id</code> and <code>client_secret</code> are
+  combined in the format <code>client_id:client_secret</code> and Base64 encoded. This encoded value is included in the
+  Authorization header as <code>Basic &lt;encoded_credentials&gt;</code>.</li>
+<li>Body Parameters (URL-encoded)  <ul>
+<li><code>grant_type</code>: Set to &quot;authorization_code&quot;</li>
+<li><code>code</code>: The authorization code received in the redirect</li>
+<li><code>redirect_uri</code>: Must match the <code>redirect_uri</code> used the previous step</li>
+</ul>
+</li>
+</ol>
+<p>Example Token Request:  </p>
+<pre><code>  POST https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>api<span class="token punctuation">.</span>perfectvenue<span class="token punctuation">.</span>com<span class="token operator">/</span>oauth<span class="token operator">/</span>token
+  Authorization<span class="token punctuation">:</span> Basic <span class="token function">BASE64_ENCODED</span><span class="token punctuation">(</span>client_id<span class="token punctuation">:</span>client_secret<span class="token punctuation">)</span>
+  Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+
+  grant_type<span class="token operator">=</span>authorization_code<span class="token operator">&amp;</span>code<span class="token operator">=</span>AUTHORIZATION_CODE<span class="token operator">&amp;</span>redirect_uri<span class="token operator">=</span>REDIRECT_URI
+</code></pre>
+</div></div></div><div id="section/Authentication/Using-access-tokens" data-section-id="section/Authentication/Using-access-tokens" class="sc-dntaoT bvhSud"><div class="sc-kLhKbu dECWTf"><div class="sc-fAUdSK dFrZq"><h2 class="sc-dstKZu fwLsMM"><a class="sc-jwIPbr hbTOAm" href="#section/Authentication/Using-access-tokens" aria-label="section/Authentication/Using-access-tokens"></a>Using access tokens</h2></div></div><div class="sc-fAUdSK dYLNKi"><div class="sc-epnzzT sc-eMwmJz drsioI jcyPYx redoc-markdown " html="&lt;p&gt;Upon a successful token exchange, you’ll receive a JSON response with an access token. Include this token in the Authorization header as &lt;code&gt;Bearer &amp;lt;token&amp;gt;&lt;/code&gt; for all authenticated requests.  &lt;/p&gt;
+&lt;p&gt;Example API Request:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  GET &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;api&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;v1&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;venues
+  Host&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; api&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;perfectvenue&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;com
+  Authorization&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Bearer YOUR_ACCESS_TOKEN
+&lt;/code&gt;&lt;/pre&gt;
+"><p>Upon a successful token exchange, you’ll receive a JSON response with an access token. Include this token in the Authorization header as <code>Bearer &lt;token&gt;</code> for all authenticated requests.  </p>
+<p>Example API Request:</p>
+<pre><code>  GET <span class="token operator">/</span>api<span class="token operator">/</span>v1<span class="token operator">/</span>venues
+  Host<span class="token punctuation">:</span> api<span class="token punctuation">.</span>perfectvenue<span class="token punctuation">.</span>com
+  Authorization<span class="token punctuation">:</span> Bearer YOUR_ACCESS_TOKEN
+</code></pre>
+</div></div></div><div id="section/Authentication/Using-refresh-tokens" data-section-id="section/Authentication/Using-refresh-tokens" class="sc-dntaoT bvhSud"><div class="sc-kLhKbu dECWTf"><div class="sc-fAUdSK dFrZq"><h2 class="sc-dstKZu fwLsMM"><a class="sc-jwIPbr hbTOAm" href="#section/Authentication/Using-refresh-tokens" aria-label="section/Authentication/Using-refresh-tokens"></a>Using refresh tokens</h2></div></div><div class="sc-fAUdSK dYLNKi"><div class="sc-epnzzT sc-eMwmJz drsioI jcyPYx redoc-markdown " html="&lt;p&gt;Token responses will include a refresh token that can be exchanged for a new access token.
+To exchange this authorization code for an access token, send a POST request to the Token URL with the following setup:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;Authorization&lt;/code&gt; Header: Use Basic HTTP authentication, where the &lt;code&gt;client_id&lt;/code&gt; and &lt;code&gt;client_secret&lt;/code&gt; are
+  combined in the format &lt;code&gt;client_id:client_secret&lt;/code&gt; and Base64 encoded. This encoded value is included in the
+  Authorization header as &lt;code&gt;Basic &amp;lt;encoded_credentials&amp;gt;&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Body Parameters (URL-encoded)  &lt;ul&gt;
+&lt;li&gt;&lt;code&gt;grant_type&lt;/code&gt;: Set to &amp;quot;refresh_token&amp;quot;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;refresh_token&lt;/code&gt;: The refresh token obtained from a previous token request&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Example Refresh Token Request:  &lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  POST https&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;api&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;perfectvenue&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;com&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;oauth&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;token
+  Authorization&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Basic &lt;span class=&quot;token function&quot;&gt;BASE64_ENCODED&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;client_id&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;client_secret&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  Content&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Type&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; application&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;x&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;www&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;form&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;urlencoded
+
+  grant_type&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;refresh_token&lt;span class=&quot;token operator&quot;&gt;&amp;amp;&lt;/span&gt;refresh_token&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;REFRESH_TOKEN
+&lt;/code&gt;&lt;/pre&gt;
+"><p>Token responses will include a refresh token that can be exchanged for a new access token.
+To exchange this authorization code for an access token, send a POST request to the Token URL with the following setup:</p>
+<ol>
+<li><code>Authorization</code> Header: Use Basic HTTP authentication, where the <code>client_id</code> and <code>client_secret</code> are
+  combined in the format <code>client_id:client_secret</code> and Base64 encoded. This encoded value is included in the
+  Authorization header as <code>Basic &lt;encoded_credentials&gt;</code>.</li>
+<li>Body Parameters (URL-encoded)  <ul>
+<li><code>grant_type</code>: Set to &quot;refresh_token&quot;</li>
+<li><code>refresh_token</code>: The refresh token obtained from a previous token request</li>
+</ul>
+</li>
+</ol>
+<p>Example Refresh Token Request:  </p>
+<pre><code>  POST https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>api<span class="token punctuation">.</span>perfectvenue<span class="token punctuation">.</span>com<span class="token operator">/</span>oauth<span class="token operator">/</span>token
+  Authorization<span class="token punctuation">:</span> Basic <span class="token function">BASE64_ENCODED</span><span class="token punctuation">(</span>client_id<span class="token punctuation">:</span>client_secret<span class="token punctuation">)</span>
+  Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+
+  grant_type<span class="token operator">=</span>refresh_token<span class="token operator">&amp;</span>refresh_token<span class="token operator">=</span>REFRESH_TOKEN
+</code></pre>
+</div></div></div><div id="tag/Venues" data-section-id="tag/Venues" class="sc-dntaoT bvhSud"><div class="sc-kLhKbu dECWTf"><div class="sc-fAUdSK dFrZq"><h2 class="sc-khLCKb yDlFw"><a class="sc-jwIPbr hbTOAm" href="#tag/Venues" aria-label="tag/Venues"></a>Venues</h2></div></div></div><div id="tag/Venues/operation/listVenues" data-section-id="tag/Venues/operation/listVenues" class="sc-dntaoT aYCdu"><div data-section-id="operation/listVenues" id="operation/listVenues" class="sc-kLhKbu dECWTf"><div class="sc-fAUdSK dFrZq"><h2 class="sc-khLCKb yDlFw"><a class="sc-jwIPbr hbTOAm" href="#tag/Venues/operation/listVenues" aria-label="tag/Venues/operation/listVenues"></a>List venues<!-- --> </h2><div class="sc-fantwC exRUVh"><div html="&lt;p&gt;List venues which the user is a member of. Venue membership can be granted by an organization admin in the Perfect Venue dashboard.&lt;/p&gt;
+" class="sc-epnzzT sc-eMwmJz drsioI jcyPYx"><p>List venues which the user is a member of. Venue membership can be granted by an organization admin in the Perfect Venue dashboard.</p>
+</div></div><div class="sc-hGNhLO dyzdIR"><div class="sc-jWJSSj jXOga-d"><h5 class="sc-dpBQxM sc-khdDuB eJAAZj ffSXYc">Authorizations:</h5><svg class="sc-cHqXqK bEpxpV" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-iCjFWQ gQOXJB"><span class="sc-irPVuy eqXCjK"><span class="sc-bqvdXA dIXVzO"><i>bearerHttpAuthentication</i></span></span></div></div><div><h3 class="sc-edsqmr dheqgt">Responses</h3><div><button class="sc-gohMHu cnBopK"><svg class="sc-cHqXqK hmCwJW" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-bKXUjo beMorW">200<!-- --> </strong><div html="&lt;p&gt;Success&lt;/p&gt;
+" class="sc-epnzzT sc-eMwmJz drsioI jcyPYx sc-drVZOg jtjIAv"><p>Success</p>
+</div></button></div></div></div><div class="sc-ivxoEo sc-ghWlax gOjFGl oECKJ"><div class="sc-duWCru dWZoid"><button class="sc-iPHsxv ebcgbH"><span type="get" class="sc-txhaY dviJfg http-verb get">get</span><span class="sc-etPtWW iqHzp">/venues</span><svg class="sc-cHqXqK fmmJjS" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-ePpfBx ddApzj"><div class="sc-dwGkES evaCJX"><div html="" class="sc-epnzzT sc-eMwmJz drsioI bsnmaX"></div><div tabindex="0" role="button"><div class="sc-hSyjfr gufODt"><span>https://api.perfectvenue.com/api/v1</span>/venues</div></div></div></div></div><div><h3 class="sc-keTIit zvQzH"> <!-- -->Response samples<!-- --> </h3><div class="sc-bMTdWJ fbQvpV" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab:R2ebdq:0" aria-selected="true" aria-disabled="false" aria-controls="panel:R2ebdq:0" tabindex="0" data-rttab="true">200</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel:R2ebdq:0" aria-labelledby="tab:R2ebdq:0"><div><div class="sc-Rjrgp dIDLbO"><span class="sc-fufdwm kFTBSF">Content type</span><div class="sc-UblHX bJmRjH">application/json</div></div><div class="sc-FFETS kqHNPM"><div class="sc-eDHQDy mMhCU"><div class="sc-uYFMi eWqsOh"><button><div class="sc-eWPXlR ezdXRP">Copy</div></button><button> Expand all </button><button> Collapse all </button></div><div class="sc-epnzzT drsioI sc-giBObj iyEpFV"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"status"</span>: <span class="token string">&quot;success&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"data"</span>: <button class="collapser" aria-label="collapse"></button><span class="token punctuation">[</span><span class="ellipsis"></span><ul class="array collapsible"><li><div class="hoverable collapsed"><button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"id"</span>: <span class="token string">&quot;venue_kjKibRA_qyCf8g&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"organization_id"</span>: <span class="token string">&quot;org_dGXJNypla-vowQ&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"name"</span>: <span class="token string">&quot;The Lola Rose&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"timezone"</span>: <span class="token string">&quot;America/New_York&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"website_url"</span>: <span class="token string">&quot;</span><a href="https://perfectvenue.com">https://perfectvenue.com</a><span class="token string">&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"multi_day_enabled"</span>: <span class="token boolean">true</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"address"</span>: <button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"street_address1"</span>: <span class="token string">&quot;159 Osinski Crossroad&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"street_address2"</span>: <span class="token string">&quot;Suite 255&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"city"</span>: <span class="token string">&quot;South Zelda&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"state"</span>: <span class="token string">&quot;North Dakota&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"zip"</span>: <span class="token string">&quot;69196&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"country"</span>: <span class="token string">&quot;United States&quot;</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">]</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div></div></div></div></div></div><div id="tag/Venues/operation/getVenue" data-section-id="tag/Venues/operation/getVenue" class="sc-dntaoT aYCdu"><div data-section-id="operation/getVenue" id="operation/getVenue" class="sc-kLhKbu dECWTf"><div class="sc-fAUdSK dFrZq"><h2 class="sc-khLCKb yDlFw"><a class="sc-jwIPbr hbTOAm" href="#tag/Venues/operation/getVenue" aria-label="tag/Venues/operation/getVenue"></a>Get venue<!-- --> </h2><div class="sc-fantwC exRUVh"><div html="&lt;p&gt;Get an individual venue by ID.&lt;/p&gt;
+" class="sc-epnzzT sc-eMwmJz drsioI jcyPYx"><p>Get an individual venue by ID.</p>
+</div></div><div class="sc-hGNhLO dyzdIR"><div class="sc-jWJSSj jXOga-d"><h5 class="sc-dpBQxM sc-khdDuB eJAAZj ffSXYc">Authorizations:</h5><svg class="sc-cHqXqK bEpxpV" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-iCjFWQ gQOXJB"><span class="sc-irPVuy eqXCjK"><span class="sc-bqvdXA dIXVzO"><i>bearerHttpAuthentication</i></span></span></div></div><div><h5 class="sc-dpBQxM eJAAZj">path<!-- --> Parameters</h5><table class="sc-dprtRQ eNFxPe"><tbody><tr class="last "><td kind="field" title="venue_id" class="sc-ovuCP sc-eauhAA iyKqKI iQpMVv"><span class="sc-gQaihK kPDxnK"></span><span class="property-name">venue_id</span></td><td class="sc-fFoeYl cHXoZJ"><div><div><span class="sc-CNKsk sc-cqgMZH hPAOR dWKYKL"></span><span class="sc-CNKsk sc-gQkENW hPAOR bIEFFi">string</span></div> <div><div html="&lt;p&gt;The ID of the venue&lt;/p&gt;
+" class="sc-epnzzT sc-eMwmJz drsioI bsnmaX"><p>The ID of the venue</p>
+</div></div></div></td></tr></tbody></table></div><div><h3 class="sc-edsqmr dheqgt">Responses</h3><div><button class="sc-gohMHu cnBopK"><svg class="sc-cHqXqK hmCwJW" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-bKXUjo beMorW">200<!-- --> </strong><div html="&lt;p&gt;Success&lt;/p&gt;
+" class="sc-epnzzT sc-eMwmJz drsioI jcyPYx sc-drVZOg jtjIAv"><p>Success</p>
+</div></button></div><div><button class="sc-gohMHu fhwTMk"><svg class="sc-cHqXqK kVOWjS" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-bKXUjo beMorW">403<!-- --> </strong><div html="&lt;p&gt;Forbidden&lt;/p&gt;
+" class="sc-epnzzT sc-eMwmJz drsioI jcyPYx sc-drVZOg jtjIAv"><p>Forbidden</p>
+</div></button></div><div><button class="sc-gohMHu fhwTMk"><svg class="sc-cHqXqK kVOWjS" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-bKXUjo beMorW">404<!-- --> </strong><div html="&lt;p&gt;Not Found&lt;/p&gt;
+" class="sc-epnzzT sc-eMwmJz drsioI jcyPYx sc-drVZOg jtjIAv"><p>Not Found</p>
+</div></button></div></div></div><div class="sc-ivxoEo sc-ghWlax gOjFGl oECKJ"><div class="sc-duWCru dWZoid"><button class="sc-iPHsxv ebcgbH"><span type="get" class="sc-txhaY dviJfg http-verb get">get</span><span class="sc-etPtWW iqHzp">/venues/{venue_id}</span><svg class="sc-cHqXqK fmmJjS" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-ePpfBx ddApzj"><div class="sc-dwGkES evaCJX"><div html="" class="sc-epnzzT sc-eMwmJz drsioI bsnmaX"></div><div tabindex="0" role="button"><div class="sc-hSyjfr gufODt"><span>https://api.perfectvenue.com/api/v1</span>/venues/{venue_id}</div></div></div></div></div><div><h3 class="sc-keTIit zvQzH"> <!-- -->Response samples<!-- --> </h3><div class="sc-bMTdWJ fbQvpV" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab:R2eddq:0" aria-selected="true" aria-disabled="false" aria-controls="panel:R2eddq:0" tabindex="0" data-rttab="true">200</li><li class="tab-error" role="tab" id="tab:R2eddq:1" aria-selected="false" aria-disabled="false" aria-controls="panel:R2eddq:1" data-rttab="true">403</li><li class="tab-error" role="tab" id="tab:R2eddq:2" aria-selected="false" aria-disabled="false" aria-controls="panel:R2eddq:2" data-rttab="true">404</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel:R2eddq:0" aria-labelledby="tab:R2eddq:0"><div><div class="sc-Rjrgp dIDLbO"><span class="sc-fufdwm kFTBSF">Content type</span><div class="sc-UblHX bJmRjH">application/json</div></div><div class="sc-FFETS kqHNPM"><div class="sc-eDHQDy mMhCU"><div class="sc-uYFMi eWqsOh"><button><div class="sc-eWPXlR ezdXRP">Copy</div></button><button> Expand all </button><button> Collapse all </button></div><div class="sc-epnzzT drsioI sc-giBObj iyEpFV"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"status"</span>: <span class="token string">&quot;success&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"data"</span>: <button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"id"</span>: <span class="token string">&quot;venue_kjKibRA_qyCf8g&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"organization_id"</span>: <span class="token string">&quot;org_dGXJNypla-vowQ&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"name"</span>: <span class="token string">&quot;The Lola Rose&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"timezone"</span>: <span class="token string">&quot;America/New_York&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"website_url"</span>: <span class="token string">&quot;</span><a href="https://perfectvenue.com">https://perfectvenue.com</a><span class="token string">&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"multi_day_enabled"</span>: <span class="token boolean">true</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"address"</span>: <button class="collapser" aria-label="expand"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable collapsed"><span class="property token string">"street_address1"</span>: <span class="token string">&quot;159 Osinski Crossroad&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"street_address2"</span>: <span class="token string">&quot;Suite 255&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"city"</span>: <span class="token string">&quot;South Zelda&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"state"</span>: <span class="token string">&quot;North Dakota&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"zip"</span>: <span class="token string">&quot;69196&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable collapsed"><span class="property token string">"country"</span>: <span class="token string">&quot;United States&quot;</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">}</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel:R2eddq:1" aria-labelledby="tab:R2eddq:1"></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel:R2eddq:2" aria-labelledby="tab:R2eddq:2"></div></div></div></div></div></div></div><div class="sc-eEVuZf ifLiBE"></div></div></div>
+      <script>
+      const __redoc_state = {"menu":{"activeItemIdx":-1},"spec":{"data":{"openapi":"3.1.0","info":{"version":"1.0.0","title":"Perfect Venue API Docs","termsOfService":"https://www.perfectvenue.com/terms-of-service","contact":{"name":"Contact us","email":"eng@perfectvenue.com","url":"https://www.perfectvenue.com"},"x-logo":{"url":"https://cdn.prod.website-files.com/63d06722a6f6c812bbe32959/63d2fec1c973d398875d5a4e_PV_logo%402x.png","altText":"Perfect Venue Logo"},"description":"# Introduction\nWelcome to the Perfect Venue API docs. This API is available to Perfect Venue partners. If you're interested in building an integration, please reach out to eng@perfectvenue.com and we'll help you get set up.  \n\nThis site was generated with [Redoc](https://github.com/Redocly/Redoc) and the [OpenAPI/Swagger format](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md).\n# Authentication\nThe Perfect Venue API uses Bearer tokens for authentication. You can obtain a token by following the OAuth 2.0 authorization code flow, described below.\n## Authorizing the app\nDirect the user to the Authorization URL with the following query parameters:\n\n  * `response_type`: Set to \"code\"\n  * `client_id`: Your application’s unique client ID, provided during registration\n  * `redirect_uri`: The URL to which the user will be redirected after authorization\n  * `scope`: Space-separated list of permissions your application needs\n  * `state`: (Optional but recommended) A random string to maintain state between the request and callback, helping to prevent [CSRF attacks](https://auth0.com/docs/secure/attack-protection/state-parameters)\n\nExample Authorization URL:\n~~~\n  https://api.perfectvenue.com/oauth/authorize?response_type=code&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=venues:read%20events:write&state=RANDOM_STRING\n~~~ \n## Obtaining an access token\nOnce the user has authorized your application, they will be redirected to the specified `redirect_uri` with a code parameter in the query string.  \n\nTo exchange this authorization code for an access token, send a POST request to the Token URL with the following setup:\n\n  1. `Authorization` Header: Use Basic HTTP authentication, where the `client_id` and `client_secret` are\n  combined in the format `client_id:client_secret` and Base64 encoded. This encoded value is included in the\n  Authorization header as `Basic <encoded_credentials>`.\n  2. Body Parameters (URL-encoded)  \n      * `grant_type`: Set to \"authorization_code\"\n      * `code`: The authorization code received in the redirect\n      * `redirect_uri`: Must match the `redirect_uri` used the previous step\n\n\nExample Token Request:  \n~~~\n  POST https://api.perfectvenue.com/oauth/token\n  Authorization: Basic BASE64_ENCODED(client_id:client_secret)\n  Content-Type: application/x-www-form-urlencoded\n\n  grant_type=authorization_code&code=AUTHORIZATION_CODE&redirect_uri=REDIRECT_URI\n~~~\n## Using access tokens\nUpon a successful token exchange, you’ll receive a JSON response with an access token. Include this token in the Authorization header as `Bearer <token>` for all authenticated requests.  \n\nExample API Request:\n~~~\n  GET /api/v1/venues\n  Host: api.perfectvenue.com\n  Authorization: Bearer YOUR_ACCESS_TOKEN\n~~~\n## Using refresh tokens\nToken responses will include a refresh token that can be exchanged for a new access token.\nTo exchange this authorization code for an access token, send a POST request to the Token URL with the following setup:\n\n  1. `Authorization` Header: Use Basic HTTP authentication, where the `client_id` and `client_secret` are\n  combined in the format `client_id:client_secret` and Base64 encoded. This encoded value is included in the\n  Authorization header as `Basic <encoded_credentials>`.\n  2. Body Parameters (URL-encoded)  \n      * `grant_type`: Set to \"refresh_token\"\n      * `refresh_token`: The refresh token obtained from a previous token request\n  \nExample Refresh Token Request:  \n~~~\n  POST https://api.perfectvenue.com/oauth/token\n  Authorization: Basic BASE64_ENCODED(client_id:client_secret)\n  Content-Type: application/x-www-form-urlencoded\n\n  grant_type=refresh_token&refresh_token=REFRESH_TOKEN\n~~~ \n"},"externalDocs":{"description":"Perfect Venue Help Center","url":"https://help.perfectvenue.com/knowledge"},"tags":[{"name":"Venue","description":"Venue operations"}],"x-tagGroups":[{"name":"API Reference","tags":["Venues"]}],"servers":[{"url":"https://api.perfectvenue.com/api/v1"}],"paths":{"/venues":{"get":{"tags":["Venues"],"summary":"List venues","description":"List venues which the user is a member of. Venue membership can be granted by an organization admin in the Perfect Venue dashboard.\n","operationId":"listVenues","responses":{"200":{"description":"Success","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string","enum":["success"]},"data":{"type":"array","items":{"$ref":"#/components/schemas/Venue"}}}}}}}}}},"/venues/{venue_id}":{"get":{"tags":["Venues"],"summary":"Get venue","description":"Get an individual venue by ID.\n","operationId":"getVenue","parameters":[{"in":"path","name":"venue_id","schema":{"type":"string","description":"The ID of the venue"}}],"responses":{"200":{"description":"Success","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string","enum":["success"]},"data":{"$ref":"#/components/schemas/Venue"}}}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string","enum":["fail"]},"data":{"type":"array","items":{"type":"object","properties":{"message":{"type":"string","example":"You do not have access to this venue"}}}}}}}}},"404":{"description":"Not Found","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string","enum":["fail"]},"data":{"type":"array","items":{"type":"object","properties":{"message":{"type":"string","example":"Venue not found"}}}}}}}}}}}}},"components":{"securitySchemes":{"oauth2":{"type":"oauth2","flows":{"authorizationCode":{"authorizationUrl":"https://api.perfectvenue.com/oauth/authorize","tokenUrl":"https://api.perfectvenue.com/oauth/token","refreshUrl":"https://api.perfectvenue.com/oauth/token","scopes":{"public":null}}}},"bearerHttpAuthentication":{"description":"Bearer token using an access token obtained from the authorization server","type":"http","scheme":"Bearer"}},"schemas":{"Address":{"type":"object","properties":{"street_address1":{"type":"string","example":"159 Osinski Crossroad"},"street_address2":{"type":"string","example":"Suite 255"},"city":{"type":"string","example":"South Zelda"},"state":{"type":"string","example":"North Dakota"},"zip":{"type":"string","example":"69196"},"country":{"type":"string","example":"United States"}}},"Venue":{"type":"object","properties":{"id":{"type":"string","description":"The ID of the venue","example":"venue_kjKibRA_qyCf8g"},"organization_id":{"type":"string","description":"The ID of the venue's organization","example":"org_dGXJNypla-vowQ"},"name":{"type":"string","description":"The name of the venue","example":"The Lola Rose"},"timezone":{"type":"string","description":"The venue's timezone","example":"America/New_York"},"website_url":{"type":"string","format":"url","description":"The venue's website","example":"https://perfectvenue.com"},"multi_day_enabled":{"type":"boolean","description":"Indicates if the venue supports multi-day events","example":true},"address":{"$ref":"#/components/schemas/Address"}}}}},"security":[{"bearerHttpAuthentication":[]}]}},"options":{"htmlTemplate":"./docs/index.html","disableSearch":true,"theme":{"colors":{"primary":{"main":"#32329f"}},"logo":{"gutter":"20px"},"typography":{"fontFamily":"Circular","headings":{"fontFamily":"Circular"}}}}};
+
+      var container = document.getElementById('redoc');
+      Redoc.hydrate(__redoc_state, container);
+
+      </script>
+</body>
+
+</html>
