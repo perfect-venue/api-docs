@@ -7,13 +7,7 @@ required:
   - multi_day_enabled
 properties:
   id:
-    type: string
-    description: The ID of the venue
-    example: venue_kjKibRA_qyCf8g
-  organization_id:
-    type: string
-    description: The ID of the venue's organization
-    example: org_dGXJNypla-vowQ
+    $ref: "./VenueId.yaml"
   name:
     type: string
     description: The name of the venue

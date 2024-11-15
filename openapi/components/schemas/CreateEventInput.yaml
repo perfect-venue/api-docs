@@ -1,0 +1,20 @@
+type: object
+required:
+  - venue_id
+  - contact_id
+  - name
+  - start_date
+  - end_date
+properties:
+  venue_id:
+    $ref: "./VenueId.yaml"
+  contact_id:
+    $ref: "./ContactId.yaml"
+  name:
+    $ref: "./EventName.yaml"
+  start_date:
+    $ref: "./EventStartDate.yaml"
+  end_date:
+    $ref: "./EventEndDate.yaml"
+  group_size:
+    $ref: "./EventGroupSize.yaml"

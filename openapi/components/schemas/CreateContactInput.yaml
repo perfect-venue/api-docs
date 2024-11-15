@@ -1,0 +1,14 @@
+type: object
+required:
+  - venue_id
+properties:
+  venue_id:
+    $ref: "./VenueId.yaml"
+  first_name:
+    $ref: "./ContactFirstName.yaml"
+  last_name:
+    $ref: "./ContactLastName.yaml"
+  email:
+    $ref: "./ContactEmail.yaml"
+  phone:
+    $ref: "./ContactPhone.yaml"

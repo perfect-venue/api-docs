@@ -1,0 +1,63 @@
+get:
+  tags:
+    - Events
+  summary: Get event
+  description: >
+    Get an individual event by ID.
+  operationId: getEvent
+  parameters:
+    - in: path
+      name: event_id
+      schema:
+        type: string
+        description: The ID of the event
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [success]
+              data:
+                $ref: "../components/schemas/Event.yaml"
+    '403':
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: You do not have access to this event
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Event not found
+                

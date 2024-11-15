@@ -1,0 +1,3 @@
+type: integer
+description: The number of guests who plan to attend the event
+example: 10

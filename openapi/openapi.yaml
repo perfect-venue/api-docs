@@ -113,9 +113,15 @@ externalDocs:
 tags:
   - name: Venue
     description: "Venue operations"
+  - name: Event
+    description: "Event operations"
+  - name: Contact
+    description: "Contact operations"
 x-tagGroups:
   - name: API Reference
     tags:
+      - Contacts
+      - Events
       - Venues
 servers:
   - url: https://api.perfectvenue.com/api/v1
@@ -124,6 +130,14 @@ paths:
     $ref: 'paths/venues.yaml'
   '/venues/{venue_id}':
     $ref: 'paths/venues_{venue_id}.yaml'
+  '/events':
+    $ref: 'paths/events.yaml'
+  '/events/{event_id}':
+    $ref: 'paths/events_{event_id}.yaml'
+  '/contacts':
+    $ref: 'paths/contacts.yaml'
+  '/contacts/{contact_id}':
+    $ref: 'paths/contacts_{contact_id}.yaml'
 components:
   securitySchemes:
     oauth2:

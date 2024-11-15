@@ -1,0 +1,72 @@
+post:
+  tags:
+    - Contacts
+  summary: Create contact
+  description: >
+    Creates a new contact.  
+
+
+    **Perfect Venue does not enforce unique fields on contacts**. If you want to avoid creating contacts with duplicate phone numbers or emails, we recommend storing a copy
+    of the contact ID in your own database, and enforce unique fields there.
+
+  operationId: createContact
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - contact
+          properties:
+            contact:
+              $ref: "../components/schemas/CreateContactInput.yaml"
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [success]
+              data:
+                $ref: "../components/schemas/Contact.yaml"
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Email is malformed
+    '403':
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: You do not have access to this venue

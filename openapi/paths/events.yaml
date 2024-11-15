@@ -1,0 +1,76 @@
+post:
+  tags:
+    - Events
+  summary: Create event
+  description: >
+    Creates a new event in a venue. 
+
+
+    Creating an event requires a `venue_id`. You can get a list of the current user's venues
+    by calling the [list venues](/#tag/Venues/operation/listVenues) endpoint.  
+
+
+    Creating an event also requires a `contact_id`. When you create a contact via the [create contact](/#tag/Contacts/operation/createContact)
+    endpoint, you will get back a unique identifier for the contact that can be used to create events.
+
+  operationId: createEvent
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - event
+          properties:
+            event:
+              $ref: "../components/schemas/CreateEventInput.yaml"
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [success]
+              data:
+                $ref: "../components/schemas/Event.yaml"
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: End date must be after start date
+    '403':
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: You do not have access to this venue
