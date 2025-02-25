@@ -19,7 +19,13 @@ properties:
     $ref: "./EventName.yaml"
   start_date:
     $ref: "./EventStartDate.yaml"
+    deprecated: true
   end_date:
     $ref: "./EventEndDate.yaml"
+    deprecated: true
+  start_time:
+    $ref: "./EventStartTime.yaml"
+  end_time:
+    $ref: "./EventEndTime.yaml"
   group_size:
     $ref: "./EventGroupSize.yaml"

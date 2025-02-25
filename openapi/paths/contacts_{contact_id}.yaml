@@ -61,3 +61,76 @@ get:
                       type: string
                       example: Contact not found
                 
+put:
+  tags:
+    - Contacts
+  summary: Update contact
+  description: >
+    Update an individual contact by ID.
+  operationId: updateContact
+  parameters:
+    - in: path
+      name: contact_id
+      schema:
+        type: string
+        description: The ID of the contact
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - contact
+          properties:
+            contact:
+              $ref: "../components/schemas/UpdateContactInput.yaml"
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [success]
+              data:
+                $ref: "../components/schemas/Contact.yaml"
+    '400':
+        description: Bad Request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [fail]
+                data:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Email is malformed
+    '403':
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: You do not have access to this venue

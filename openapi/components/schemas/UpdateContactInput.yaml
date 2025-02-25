@@ -1,0 +1,10 @@
+type: object
+properties:
+  first_name:
+    $ref: "./ContactFirstName.yaml"
+  last_name:
+    $ref: "./ContactLastName.yaml"
+  email:
+    $ref: "./ContactEmail.yaml"
+  phone:
+    $ref: "./ContactPhone.yaml"
