@@ -18,7 +18,15 @@ theme:
       logo:
         gutter: '20px'
       typography:
-        fontFamily: 'Circular'
+        fontSize: '16px'
+        lineHeight: '1.6'
+        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+        optimizeSpeed: false
+        smoothing: antialiased
         headings:
-          fontFamily: 'Circular'
+          fontFamily: '"Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+          fontWeight: '600'
+        code:
+          fontSize: '14px'
+          fontFamily: 'Consolas, Monaco, "Courier New", monospace'
       
