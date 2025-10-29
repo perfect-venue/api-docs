@@ -15,18 +15,41 @@ theme:
       colors:
         primary:
           main: "#32329f"
+        text:
+          primary: "#141414"
+        border:
+          dark: "#e3e8ee"
+        http:
+          get: "#10b981"
+          post: "#0056b3"
+          put: "#f59e0b"
+          delete: "#ef4444"
+      spacing:
+        unit: 5
+        sectionHorizontal: 40
+        sectionVertical: 40
       logo:
         gutter: '20px'
       typography:
-        fontSize: '16px'
-        lineHeight: '1.6'
-        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
-        optimizeSpeed: false
-        smoothing: antialiased
+        fontSize: 15px
+        lineHeight: 1.7
+        fontFamily: 'DM Sans, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif'
         headings:
-          fontFamily: '"Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
-          fontWeight: '600'
+          fontFamily: 'Montserrat, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif'
+          fontWeight: 600
         code:
-          fontSize: '14px'
-          fontFamily: 'Consolas, Monaco, "Courier New", monospace'
+          fontSize: 13px
+          fontFamily: 'Consolas, Monaco, Courier New, monospace'
+          backgroundColor: "#1a1a1a"
+          color: "#f8f8f8"
+          wrap: false
+      codeBlock:
+        backgroundColor: "#1a1a1a"
+      rightPanel:
+        backgroundColor: "#262626"
+        width: "40%"
+      sidebar:
+        backgroundColor: "#fafafa"
+        textColor: "#141414"
+        width: 260px
       
