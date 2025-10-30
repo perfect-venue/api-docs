@@ -32,9 +32,9 @@ theme:
       typography:
         fontSize: '15px'
         lineHeight: '1.7'
-        fontFamily: 'DM Sans, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif'
+        fontFamily: 'Circular, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif'
         headings:
-          fontFamily: 'Montserrat, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif'
+          fontFamily: 'Circular, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif'
           fontWeight: '600'
         code:
           fontSize: '13px'
