@@ -1,4 +1,3 @@
-# See https://redocly.com/docs/cli/configuration/ for more information.
 apis:
   sample@v1: 
     root: openapi/openapi.yaml
@@ -15,10 +14,48 @@ theme:
       colors:
         primary:
           main: "#32329f"
+        text:
+          primary: "#141414"
+        border:
+          dark: "#e3e8ee"
+        http:
+          get: "#10b981"
+          post: "#0056b3"
+          put: "#f59e0b"
+          delete: "#ef4444"
+      spacing:
+        unit: 5
+        sectionHorizontal: 40
+        sectionVertical: 30
       logo:
         gutter: '20px'
       typography:
-        fontFamily: 'Circular'
+        fontSize: '15px'
+        lineHeight: '1.7'
+        fontFamily: 'Circular, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif'
         headings:
-          fontFamily: 'Circular'
+          fontFamily: 'Circular, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif'
+          fontWeight: '600'
+        code:
+          fontSize: '13px'
+          fontFamily: 'Consolas, Monaco, Courier New, monospace'
+        links:
+          color: "#32329f"
+          hover: "#0056b3"
+      rightPanel:
+        width: "40%"
+      sidebar:
+        backgroundColor: "#fafafa"
+        textColor: "#141414"
+        width: 260px
+        groupItems:
+          textTransform: uppercase
+      schema:
+        nestedBackground: "#fafafa"
+        labelsTextSize: '0.9em'
+      links:
+        color: "#32329f"
+      fab:
+        backgroundColor: "#32329f"
+        color: "#ffffff"
       

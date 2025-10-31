@@ -29,3 +29,7 @@ properties:
     $ref: "./EventEndTime.yaml"
   group_size:
     $ref: "./EventGroupSize.yaml"
+  source:
+    $ref: "./EventSource.yaml"
+  campaign:
+    $ref: "./EventCampaign.yaml"

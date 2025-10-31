@@ -8,10 +8,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="favicon.png">
 
-  <!--
-    ReDoc uses font options from the parent element
-    So override default browser styles
-    -->
   <style>
     @font-face {
       font-family: 'Circular';
@@ -23,6 +19,26 @@
     body {
       margin: 0;
       padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1 {
+      padding-bottom: 12px !important;
+      border-bottom: 2px solid #32329f !important;
+      margin-bottom: 24px !important;
+      margin-top: 40px !important;
+    }
+
+    h1:first-of-type {
+      margin-top: 0 !important;
+    }
+
+    h2 {
+      padding-bottom: 8px !important;
+      border-bottom: 1px solid #e3e8ee !important;
+      margin-bottom: 16px !important;
+      margin-top: 32px !important;
     }
   </style>
   {{{redocHead}}}

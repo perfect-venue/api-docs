@@ -2,11 +2,13 @@ openapi: 3.1.0
 info:
   version: 1.1.0
   title: Perfect Venue API Docs
-  termsOfService: https://www.perfectvenue.com/terms-of-service
   contact:
-    name: Contact us
+    name: Perfect Venue Engineering
     email: eng@perfectvenue.com
     url: https://www.perfectvenue.com
+  license:
+    name: Terms of Service
+    url: https://www.perfectvenue.com/terms-of-service
   x-logo:
     url: https://cdn.prod.website-files.com/63d06722a6f6c812bbe32959/63d2fec1c973d398875d5a4e_PV_logo%402x.png
     altText: Perfect Venue Logo
@@ -108,7 +110,7 @@ info:
     ~~~ 
 
 externalDocs:
-  description: "Perfect Venue Help Center"
+  description: "Visit our Help Center for guides and tutorials"
   url: 'https://help.perfectvenue.com/knowledge'
 tags:
   - name: Venue
