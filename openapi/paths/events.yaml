@@ -25,6 +25,28 @@ post:
           properties:
             event:
               $ref: "../components/schemas/CreateEventInput.yaml"
+            contact:
+              type: object
+              description: >
+                Inline contact creation. Provide either `contact_id` inside `event` or a top-level `contact` object, not both.
+                If a contact with the given email already exists in the organization, it will be used.
+              properties:
+                first_name:
+                  $ref: "../components/schemas/ContactFirstName.yaml"
+                last_name:
+                  $ref: "../components/schemas/ContactLastName.yaml"
+                email:
+                  $ref: "../components/schemas/ContactEmail.yaml"
+                phone:
+                  $ref: "../components/schemas/ContactPhone.yaml"
+            message:
+              type: object
+              description: An initial message to send to the contact when the event is created
+              properties:
+                text:
+                  type: string
+                  description: The message text
+                  example: "Thanks for your interest! We'd love to host your event."
   responses:
     '200':
       description: Success

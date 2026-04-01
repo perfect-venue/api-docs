@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
-  version: 1.1.0
-  title: Perfect Venue API Docs
+  version: 1.2.0
+  title: Perfect Venue REST API Docs
   contact:
     name: Perfect Venue Engineering
     email: eng@perfectvenue.com
@@ -119,12 +119,58 @@ tags:
     description: "Event operations"
   - name: Contact
     description: "Contact operations"
+  - name: Changelog
+    description: |
+      ## 1.2.0 — 2026-04-01
+
+      ### Venues
+
+      **New fields on [Get Venue](#tag/Venues/operation/getVenue) and [List Venues](#tag/Venues/operation/listVenues)**
+
+      | Field | Type | Description |
+      |---|---|---|
+      | `event_types` | object[] | Event types configured for the venue, each with a `name` |
+      | `spaces` | object[] | Spaces available at the venue, each with `slug`, `name`, `standing`, and `seated` capacity |
+      | `custom_fields` | object[] | Custom fields configured for the venue, each with `key`, `name`, `data_type`, and optional `options` |
+
+      ### Events
+
+      **New fields on [Create Event](#tag/Events/operation/createEvent) and [Update Event](#tag/Events/operation/updateEvent)**
+
+      The following optional fields are now supported:
+
+      | Field | Type | Description |
+      |---|---|---|
+      | `amount` | integer | Estimated event value in cents (e.g. `150000` for $1,500.00) |
+      | `event_type` | string | Event type name, must match a type configured for the venue |
+      | `spaces` | string[] | IDs of spaces to assign to the event |
+      | `custom` | object | Custom field values keyed by field key |
+
+      **Inline contact creation on [Create Event](#tag/Events/operation/createEvent)**
+
+      You can now create a contact inline when creating an event by passing a top-level `contact` object
+      instead of a `contact_id`. If a contact with the given email already exists in your organization, it
+      will be reused.
+
+      **Initial message on [Create Event](#tag/Events/operation/createEvent)**
+
+      You can now send an initial message to the contact when creating an event by passing a top-level
+      `message` object with a `text` field.
+
+      **New [Update Event](#tag/Events/operation/updateEvent) endpoint**
+
+      `PATCH /events/{event_id}` is now available. All fields are optional — only the fields you include
+      will be updated.
+
 x-tagGroups:
   - name: API Reference
     tags:
       - Contacts
       - Events
       - Venues
+  - name: Changelog
+    tags:
+      - Changelog
 servers:
   - url: https://api.perfectvenue.com/api/v1
 paths:

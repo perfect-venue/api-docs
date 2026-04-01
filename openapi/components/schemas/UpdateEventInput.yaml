@@ -1,18 +1,5 @@
 type: object
-required:
-  - id
-  - venue_id
-  - contact_id
-  - name
-  - start_date
-  - end_date
 properties:
-  id:
-    type: string
-    description: The ID of the event
-    example: dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3
-  venue_id:
-    $ref: "./VenueId.yaml"
   contact_id:
     $ref: "./ContactId.yaml"
   name:
@@ -39,3 +26,9 @@ properties:
     $ref: "./EventType.yaml"
   spaces:
     $ref: "./EventSpaces.yaml"
+  custom:
+    type: object
+    description: Custom field values for the event, keyed by custom field key
+    additionalProperties:
+      type: string
+    example: {"dietary_restrictions": "vegan", "ceremony_style": "outdoor"}
