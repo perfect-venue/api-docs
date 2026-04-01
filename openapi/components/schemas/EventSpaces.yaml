@@ -1,0 +1,5 @@
+type: array
+description: The IDs of spaces assigned to the event
+items:
+  type: string
+example: ["main-hall", "bridal-suite"]

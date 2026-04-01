@@ -1,7 +1,6 @@
 type: object
 required:
   - id
-  - organization_id
   - name
   - timezone
   - multi_day_enabled
@@ -27,3 +26,60 @@ properties:
     example: true
   address:
     $ref: "./Address.yaml"
+  event_types:
+    type: array
+    description: The event types configured for the venue
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the event type
+          example: Wedding
+  spaces:
+    type: array
+    description: The spaces available at the venue
+    items:
+      type: object
+      properties:
+        slug:
+          type: string
+          description: The unique identifier for the space
+          example: main-hall
+        name:
+          type: string
+          description: The name of the space
+          example: Main Hall
+        standing:
+          type: integer
+          description: Maximum standing capacity
+          example: 200
+        seated:
+          type: integer
+          description: Maximum seated capacity
+          example: 150
+  custom_fields:
+    type: array
+    description: Custom fields configured for the venue
+    items:
+      type: object
+      properties:
+        key:
+          type: string
+          description: The unique key used to reference this field
+          example: dietary_restrictions
+        name:
+          type: string
+          description: The display name of the field
+          example: Dietary Restrictions
+        data_type:
+          type: string
+          description: The data type of the field
+          enum: [string, number, boolean, enum, multi_enum]
+          example: enum
+        options:
+          type: array
+          description: Available options for enum and multi_enum fields
+          items:
+            type: string
+          example: ["vegan", "gluten-free", "kosher"]

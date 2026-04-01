@@ -1,7 +1,6 @@
 type: object
 required:
   - venue_id
-  - contact_id
   - name
   - start_date
   - end_date
@@ -28,3 +27,15 @@ properties:
     $ref: "./EventSource.yaml"
   campaign:
     $ref: "./EventCampaign.yaml"
+  amount:
+    $ref: "./EventAmount.yaml"
+  event_type:
+    $ref: "./EventType.yaml"
+  spaces:
+    $ref: "./EventSpaces.yaml"
+  custom:
+    type: object
+    description: Custom field values for the event, keyed by custom field key
+    additionalProperties:
+      type: string
+    example: {"dietary_restrictions": "vegan", "ceremony_style": "outdoor"}
