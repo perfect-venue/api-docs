@@ -154,8 +154,8 @@ tags:
 
       **Initial message on [Create Event](#tag/Events/operation/createEvent)**
 
-      You can now send an initial message to the contact when creating an event by passing a top-level
-      `message` object with a `text` field.
+      You can now include an initial message from the contact to the venue when creating an event by passing
+      a top-level `message` object with a `text` field.
 
       **New [Update Event](#tag/Events/operation/updateEvent) endpoint**
 
