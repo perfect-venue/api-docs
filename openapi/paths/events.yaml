@@ -41,12 +41,12 @@ post:
                   $ref: "../components/schemas/ContactPhone.yaml"
             message:
               type: object
-              description: An initial message to send to the contact when the event is created
+              description: An initial message from the contact to the venue, created along with the event
               properties:
                 text:
                   type: string
                   description: The message text
-                  example: "Thanks for your interest! We'd love to host your event."
+                  example: "We're interested in booking for a wedding reception in June."
   responses:
     '200':
       description: Success
