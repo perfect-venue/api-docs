@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  version: 1.2.0
+  version: 1.4.0
   title: Perfect Venue REST API Docs
   contact:
     name: Perfect Venue Engineering
@@ -107,7 +107,22 @@ info:
       Content-Type: application/x-www-form-urlencoded
 
       grant_type=refresh_token&refresh_token=REFRESH_TOKEN
-    ~~~ 
+    ~~~
+
+    # Rate limiting
+
+    The API is rate limited to **100 requests per minute per access token**. If you exceed this
+    limit, the API will respond with `429 Too Many Requests`.
+
+    Two headers are included on every response to help you track your usage:
+
+    | Header | Description |
+    | --- | --- |
+    | `RateLimit-Limit` | Maximum requests allowed per minute |
+    | `RateLimit-Remaining` | Requests remaining in the current window |
+
+    When you receive a `429`, wait until the next minute window before retrying. If you need a
+    higher limit, contact eng@perfectvenue.com.
 
 externalDocs:
   description: "Visit our Help Center for guides and tutorials"
@@ -119,8 +134,154 @@ tags:
     description: "Event operations"
   - name: Contact
     description: "Contact operations"
+  - name: Webhooks
+    description: |
+      Perfect Venue can notify your application in real time when things happen in a venue you have
+      access to — for example, when an event is created or a payment succeeds.
+
+      ## Setup
+
+      Register a single HTTPS endpoint URL on your OAuth application and subscribe to the event
+      types you want to receive. Your endpoint will receive events only for venues whose users have
+      authorized your application.
+
+      ## Request format
+
+      Each delivery is an HTTPS POST with `Content-Type: application/json`. The body follows this
+      envelope:
+
+      ```json
+      {
+        "id": "f8c1a0e2-...",
+        "type": "event.created",
+        "api_version": "2026-06-01",
+        "created_at": "2026-06-16T17:00:00Z",
+        "data": { }
+      }
+      ```
+
+      The `data` object contains the payload for the specific event type, documented below.
+
+      ## Event types
+
+      | Type | Fires when |
+      | --- | --- |
+      | `event.created` | An event (booking or lead) is created |
+      | `event.status_changed` | An event's status changes; payload includes the previous status |
+      | `event.deleted` | An event is deleted (soft deleted) |
+      | `contact.created` | A new inbound inquiry arrives (contact forms, the lead form API, and Tock, Knot, or OpenTable imports) |
+
+      ### event.created / event.deleted
+
+      The `data` payload is the Event object — the same shape returned by
+      [Get Event](#tag/Events/operation/getEvent) and [List Events](#tag/Events/operation/listEvents).
+
+      ### contact.created
+
+      The `data` payload is the Contact object — the same shape returned by
+      [Get Contact](#tag/Contacts/operation/getContact).
+
+      Only fires for inbound inquiry origins (contact forms, the lead form API, and imports from
+      Tock, Knot, or OpenTable). Staff-created contacts and migrated records do not emit this event.
+
+      ### event.status_changed
+
+      A thin payload carrying only what changed. Use the `id` to fetch the full event from the
+      REST API if you need other fields.
+
+      | Field | Type | Description |
+      | --- | --- | --- |
+      | `id` | string | Event ID |
+      | `venue_id` | string | Venue ID |
+      | `status` | string | New status |
+      | `previous_status` | string\|null | Status before the change |
+      | `updated_at` | string | ISO 8601 timestamp of the change |
+
+      ## Verifying the signature
+
+      Every delivery includes a `PV-Signature` header:
+
+      ```
+      PV-Signature: t=1718557200,v1=5257a869e7ecebeda32affa62cdca3fa...
+      ```
+
+      `t` is the Unix timestamp the request was signed. `v1` is the HMAC-SHA256 hex digest of
+      `"#{msg_id}.#{t}.#{raw_body}"` where `msg_id` is the value of the `PV-Webhook-Id` header,
+      computed with your endpoint's signing secret. Verify by recomputing the HMAC with your
+      secret and comparing it to `v1`. Reject requests where `t` is too far from the current
+      time (we recommend a 5-minute tolerance). Including `msg_id` in the signed content means
+      a replay attack with a swapped `PV-Webhook-Id` will fail verification.
+
+      ## Idempotency
+
+      The `PV-Webhook-Id` header (and the `id` field in the body) is a stable identifier for an
+      event delivery. It does not change across retries. Use it to deduplicate: if you have already
+      processed an `id`, acknowledge with 2xx and ignore the repeat.
+
+      Delivery is at-least-once. Your handler must be safe to run twice for the same `PV-Webhook-Id`.
+
+      ## Ordering
+
+      There is no global ordering guarantee. Deliveries are dispatched concurrently and can arrive
+      out of order. Events about the same resource carry a `created_at` you can order by, and you
+      can always read the current state from the REST API to reconcile.
+
+      ## Retries and endpoint health
+
+      Respond with a 2xx status to acknowledge a delivery. Any non-2xx response or connection
+      error is treated as a failure and retried with exponential backoff over several days.
+
+      If an endpoint fails repeatedly with no successful delivery in between, we disable it and
+      notify the application's contact email. A disabled endpoint can be re-enabled once it is
+      healthy again; re-enabling resumes new deliveries.
+
   - name: Changelog
     description: |
+      ## 1.4.0 — 2026-06-18
+
+      ### Webhooks
+
+      **New [Webhooks](#tag/Webhooks) section**
+
+      Outgoing webhooks are now available. Register an HTTPS endpoint on your OAuth application
+      and subscribe to the event types you care about. Perfect Venue will POST a signed JSON
+      payload to your endpoint whenever a subscribed event occurs.
+
+      Event types available in this release:
+
+      | Type | Fires when |
+      | --- | --- |
+      | `event.created` | An event is created |
+      | `event.status_changed` | An event's status changes |
+      | `event.deleted` | An event is deleted |
+      | `contact.created` | A new inbound inquiry arrives |
+
+      See the [Webhooks](#tag/Webhooks) section for the full delivery contract, payload schemas,
+      signature verification, and retry behavior.
+
+      ### Events
+
+      **New [List Events](#tag/Events/operation/listEvents) endpoint**
+
+      `GET /events` is now available. Returns a paginated list of events for a venue with support for filtering
+      by status, event type, source, spaces, contact, and date range.
+
+      | Parameter | Type | Description |
+      |---|---|---|
+      | `venue_id` | string | **Required.** The ID of the venue |
+      | `status` | string[] | Filter by status: `lead`, `qualified`, `proposal_sent`, `confirmed`, `balance_due`, `completed`, `lost` |
+      | `event_type` | string[] | Filter by event type name |
+      | `source` | string[] | Filter by event source |
+      | `spaces` | string[] | Filter by space slug |
+      | `contact_id` | string | Filter by contact ID |
+      | `order` | string | Sort field: `created_at` (default), `updated_at`, `start_time`, `name` |
+      | `sort_direction` | string | `asc` or `desc` (default) |
+      | `date_from` | string | ISO 8601 start of date range (requires `date_to`) |
+      | `date_to` | string | ISO 8601 end of date range (requires `date_from`) |
+      | `date_field` | string | Date field for range filter: `created_at` (default), `updated_at`, `start_time` |
+      | `page` | integer | Page number (default: 1) |
+      | `per_page` | integer | Results per page, max 100 (default: 25) |
+
       ## 1.2.0 — 2026-04-01
 
       ### Venues
@@ -168,6 +329,9 @@ x-tagGroups:
       - Contacts
       - Events
       - Venues
+  - name: Webhooks
+    tags:
+      - Webhooks
   - name: Changelog
     tags:
       - Changelog

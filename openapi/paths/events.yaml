@@ -1,3 +1,202 @@
+get:
+  tags:
+    - Events
+  summary: List events
+  description: >
+    Returns a paginated list of events for a venue. Requires a `venue_id` query parameter.
+
+
+    Results can be filtered by status, event type, source, spaces, contact, or date range, and sorted
+    by a configurable field and direction.
+  operationId: listEvents
+  parameters:
+    - in: query
+      name: venue_id
+      required: true
+      schema:
+        type: string
+      description: The ID of the venue to list events for
+    - in: query
+      name: status
+      schema:
+        type: array
+        items:
+          type: string
+          enum: [lead, qualified, proposal_sent, confirmed, balance_due, completed, lost]
+      style: form
+      explode: true
+      description: Filter by one or more event statuses
+    - in: query
+      name: event_type
+      schema:
+        type: array
+        items:
+          type: string
+      style: form
+      explode: true
+      description: Filter by one or more event type names configured for the venue
+    - in: query
+      name: source
+      schema:
+        type: array
+        items:
+          type: string
+      style: form
+      explode: true
+      description: Filter by one or more event sources
+    - in: query
+      name: spaces
+      schema:
+        type: array
+        items:
+          type: string
+      style: form
+      explode: true
+      description: Filter by one or more space slugs configured for the venue
+    - in: query
+      name: contact_id
+      schema:
+        type: string
+      description: Filter events by contact ID
+    - in: query
+      name: order
+      schema:
+        type: string
+        enum: [created_at, updated_at, start_time, name]
+        default: created_at
+      description: Field to sort results by
+    - in: query
+      name: sort_direction
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+      description: Sort direction
+    - in: query
+      name: date_from
+      schema:
+        type: string
+        format: date-time
+        example: "2025-01-01T00:00:00Z"
+      description: >
+        Start of date range filter (ISO 8601). Must be provided together with `date_to`.
+    - in: query
+      name: date_to
+      schema:
+        type: string
+        format: date-time
+        example: "2025-12-31T23:59:59Z"
+      description: >
+        End of date range filter (ISO 8601). Must be provided together with `date_from`.
+    - in: query
+      name: date_field
+      schema:
+        type: string
+        enum: [created_at, updated_at, start_time]
+        default: created_at
+      description: Which date field the `date_from`/`date_to` range applies to
+    - in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: Page number
+    - in: query
+      name: per_page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 25
+      description: Number of results per page (max 100)
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [success]
+              data:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: "../components/schemas/Event.yaml"
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      per_page:
+                        type: integer
+                        example: 25
+                      total_count:
+                        type: integer
+                        example: 100
+                      total_pages:
+                        type: integer
+                        example: 4
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: venue_id is required
+    '403':
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: You do not have access to this venue
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Venue not found
 post:
   tags:
     - Events
