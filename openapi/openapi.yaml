@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  version: 1.4.0
+  version: 1.3.0
   title: Perfect Venue REST API Docs
   contact:
     name: Perfect Venue Engineering
@@ -237,7 +237,7 @@ tags:
 
   - name: Changelog
     description: |
-      ## 1.4.0 — 2026-06-18
+      ## 1.3.0 — 2026-06-18
 
       ### Webhooks
 
