@@ -6,6 +6,9 @@ required:
   - name
   - start_date
   - end_date
+  - status
+  - created_at
+  - updated_at
 properties:
   id:
     type: string
@@ -17,6 +20,11 @@ properties:
     $ref: "./ContactId.yaml"
   name:
     $ref: "./EventName.yaml"
+  status:
+    type: string
+    description: The current status of the event
+    enum: [lead, qualified, proposal_sent, confirmed, balance_due, completed, lost]
+    example: confirmed
   start_date:
     $ref: "./EventStartDate.yaml"
     deprecated: true
@@ -39,3 +47,13 @@ properties:
     $ref: "./EventType.yaml"
   spaces:
     $ref: "./EventSpaces.yaml"
+  created_at:
+    type: string
+    format: date-time
+    description: ISO 8601 timestamp when the event was created
+    example: "2026-01-15T09:00:00Z"
+  updated_at:
+    type: string
+    format: date-time
+    description: ISO 8601 timestamp when the event was last updated
+    example: "2026-06-01T14:30:00Z"
