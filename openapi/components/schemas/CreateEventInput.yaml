@@ -2,8 +2,6 @@ type: object
 required:
   - venue_id
   - name
-  - start_date
-  - end_date
 properties:
   venue_id:
     $ref: "./VenueId.yaml"

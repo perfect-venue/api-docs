@@ -8,6 +8,14 @@ get:
 
     Results can be filtered by status, event type, source, spaces, contact, or date range, and sorted
     by a configurable field and direction.
+
+
+    Pagination uses `page` and `per_page` query parameters. `page` defaults to `1`; values below `1`
+    are treated as `1`. `per_page` defaults to `25` and is clamped between `1` and `100`.
+
+
+    Pagination metadata is returned in `data.meta` with `current_page`, `per_page`, `total_count`,
+    and `total_pages`. The paginated event array is returned in `data.events`.
   operationId: listEvents
   parameters:
     - in: query
@@ -143,6 +151,36 @@ get:
                       total_pages:
                         type: integer
                         example: 4
+          examples:
+            paginated_events:
+              summary: Paginated events
+              value:
+                status: success
+                data:
+                  events:
+                    - id: dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3
+                      venue_id: VENUE_ID
+                      contact_id: CONTACT_ID
+                      name: Henry's Wedding
+                      status: lead
+                      start_date: "2026-08-15T18:00:00Z"
+                      end_date: "2026-08-15T23:00:00Z"
+                      start_time: "2026-08-15T18:00:00Z"
+                      end_time: "2026-08-15T23:00:00Z"
+                      group_size: 120
+                      source: Partner Integration
+                      campaign: Summer 2026
+                      amount: 150000
+                      event_type: Wedding
+                      spaces:
+                        - main-hall
+                      created_at: "2026-06-16T17:00:00Z"
+                      updated_at: "2026-06-16T17:00:00Z"
+                  meta:
+                    current_page: 1
+                    per_page: 25
+                    total_count: 1
+                    total_pages: 1
     '400':
       description: Bad Request
       content:
@@ -205,12 +243,16 @@ post:
     Creates a new event in a venue. 
 
 
-    Creating an event requires a `venue_id`. You can get a list of the current user's venues
+    Creating an event requires a `venue_id`. You can get a list of available venues for the authorizing Perfect Venue user
     by calling the [list venues](/#tag/Venues/operation/listVenues) endpoint.  
 
 
-    Creating an event also requires a `contact_id`. When you create a contact via the [create contact](/#tag/Contacts/operation/createContact)
-    endpoint, you will get back a unique identifier for the contact that can be used to create events.
+    Creating an event requires `venue_id`, `name`, and either an `event.contact_id` or a top-level `contact` object. `start_time`
+    and `end_time` are optional, but recommended for events with a known schedule.
+
+    When you create a contact via the
+    [create contact](/#tag/Contacts/operation/createContact) endpoint, you will get back a unique identifier for the contact that
+    can be used to create events. You can also provide a top-level `contact` object to create or reuse a contact inline.
 
   operationId: createEvent
   requestBody:
@@ -246,6 +288,43 @@ post:
                   type: string
                   description: The message text
                   example: "We're interested in booking for a wedding reception in June."
+        examples:
+          create_event_with_existing_contact:
+            summary: Create an event with an existing contact
+            value:
+              event:
+                venue_id: VENUE_ID
+                contact_id: CONTACT_ID
+                name: Henry's Wedding
+                start_time: "2026-08-15T18:00:00Z"
+                end_time: "2026-08-15T23:00:00Z"
+                group_size: 120
+                source: Partner Integration
+                campaign: Summer 2026
+                amount: 150000
+                event_type: Wedding
+                spaces:
+                  - main-hall
+                custom:
+                  dietary_restrictions: vegan
+              message:
+                text: Interested in a Saturday evening reception.
+          create_event_with_inline_contact:
+            summary: Create an event and contact together
+            value:
+              event:
+                venue_id: VENUE_ID
+                name: Corporate Dinner
+                start_time: "2026-09-10T01:00:00Z"
+                end_time: "2026-09-10T04:00:00Z"
+                group_size: 45
+                source: Partner Integration
+                event_type: Dinner
+              contact:
+                first_name: Grace
+                last_name: Hopper
+                email: grace@example.com
+                phone: "+14155550102"
   responses:
     '200':
       description: Success

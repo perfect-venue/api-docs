@@ -3,8 +3,9 @@ get:
     - Venues
   summary: List venues
   description: >
-    List venues which the user is a member of. Venue membership can be granted by an
-    organization admin in the Perfect Venue dashboard.
+    List venues available to the Perfect Venue user who authorized your application. Perfect Venue
+    provisions OAuth application access for partner developers during integration setup, but a
+    Perfect Venue user must log in and grant permission before your integration can call the API.
   operationId: listVenues
   responses:
     '200':
@@ -21,3 +22,39 @@ get:
                 type: array
                 items:
                   $ref: "../components/schemas/Venue.yaml"
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Unauthorized
+    '403':
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [fail]
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: You do not have access to any venues
