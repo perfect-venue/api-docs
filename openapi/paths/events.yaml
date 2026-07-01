@@ -205,12 +205,16 @@ post:
     Creates a new event in a venue. 
 
 
-    Creating an event requires a `venue_id`. You can get a list of the current user's venues
+    Creating an event requires a `venue_id`. You can get a list of available venues for the authorizing Perfect Venue user
     by calling the [list venues](/#tag/Venues/operation/listVenues) endpoint.  
 
 
-    Creating an event also requires a `contact_id`. When you create a contact via the [create contact](/#tag/Contacts/operation/createContact)
-    endpoint, you will get back a unique identifier for the contact that can be used to create events.
+    Creating an event requires `venue_id`, `name`, and either an `event.contact_id` or a top-level `contact` object. `start_time`
+    and `end_time` are optional, but recommended for events with a known schedule.
+
+    When you create a contact via the
+    [create contact](/#tag/Contacts/operation/createContact) endpoint, you will get back a unique identifier for the contact that
+    can be used to create events. You can also provide a top-level `contact` object to create or reuse a contact inline.
 
   operationId: createEvent
   requestBody:
@@ -246,6 +250,43 @@ post:
                   type: string
                   description: The message text
                   example: "We're interested in booking for a wedding reception in June."
+        examples:
+          create_event_with_existing_contact:
+            summary: Create an event with an existing contact
+            value:
+              event:
+                venue_id: VENUE_ID
+                contact_id: CONTACT_ID
+                name: Henry's Wedding
+                start_time: "2026-08-15T18:00:00Z"
+                end_time: "2026-08-15T23:00:00Z"
+                group_size: 120
+                source: Partner Integration
+                campaign: Summer 2026
+                amount: 150000
+                event_type: Wedding
+                spaces:
+                  - main-hall
+                custom:
+                  dietary_restrictions: vegan
+              message:
+                text: Interested in a Saturday evening reception.
+          create_event_with_inline_contact:
+            summary: Create an event and contact together
+            value:
+              event:
+                venue_id: VENUE_ID
+                name: Corporate Dinner
+                start_time: "2026-09-10T01:00:00Z"
+                end_time: "2026-09-10T04:00:00Z"
+                group_size: 45
+                source: Partner Integration
+                event_type: Dinner
+              contact:
+                first_name: Grace
+                last_name: Hopper
+                email: grace@example.com
+                phone: "+14155550102"
   responses:
     '200':
       description: Success
