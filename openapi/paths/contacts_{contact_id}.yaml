@@ -85,6 +85,13 @@ put:
           properties:
             contact:
               $ref: "../components/schemas/UpdateContactInput.yaml"
+        examples:
+          update_contact:
+            summary: Update a contact email and phone
+            value:
+              contact:
+                email: ada.updated@example.com
+                phone: "+14155550101"
   responses:
     '200':
       description: Success

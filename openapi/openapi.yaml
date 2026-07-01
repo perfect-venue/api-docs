@@ -12,7 +12,7 @@ info:
   x-logo:
     url: https://cdn.prod.website-files.com/63d06722a6f6c812bbe32959/63d2fec1c973d398875d5a4e_PV_logo%402x.png
     altText: Perfect Venue Logo
-  description: >
+  description: |
     # Introduction
 
     Welcome to the Perfect Venue API docs. This API is available to Perfect Venue partners. If you're interested
@@ -22,6 +22,139 @@ info:
     This site was generated with [Redoc](https://github.com/Redocly/Redoc) and the [OpenAPI/Swagger
     format](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md).
 
+    # Quick start
+
+    Use this flow when building a new integration:
+
+      1. Contact Perfect Venue to provision OAuth access for your integration.
+      2. Perfect Venue will configure your OAuth application and provide client credentials to your partner developer team.
+      3. Send a Perfect Venue user with access to the relevant venues through the OAuth authorization code flow.
+      4. Exchange the authorization code for an access token and refresh token.
+      5. Call `GET /venues` to find the venues available to the authorizing Perfect Venue user.
+      6. Store the Perfect Venue `venue_id` values in your system.
+      7. Create or map contacts with `POST /contacts`, or create a contact inline when creating an event.
+      8. Create events with `POST /events`.
+      9. Use `GET /events` plus webhooks to keep your system in sync.
+
+    All authenticated API requests use this base URL:
+
+    ~~~
+    https://api.perfectvenue.com/api/v1
+    ~~~
+
+    # Implementation path
+
+    **1. List venues**
+
+    After a Perfect Venue user authorizes your integration, call `GET /venues` first. Venue IDs are required when creating contacts and events.
+    The venue response also includes venue-specific configuration such as event types, spaces, and custom fields.
+
+    ~~~
+    curl https://api.perfectvenue.com/api/v1/venues \
+      -H "Authorization: Bearer ACCESS_TOKEN"
+    ~~~
+
+    Save the `id` for each venue your integration should write to.
+
+    **2. Create a contact**
+
+    Contacts are scoped to a venue. Perfect Venue does not enforce uniqueness on contact email or phone, so store
+    the returned `id` in your own system if you need to avoid duplicates.
+
+    ~~~
+    curl https://api.perfectvenue.com/api/v1/contacts \
+      -H "Authorization: Bearer ACCESS_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "contact": {
+          "venue_id": "VENUE_ID",
+          "first_name": "Ada",
+          "last_name": "Lovelace",
+          "email": "ada@example.com",
+          "phone": "+14155550100"
+        }
+      }'
+    ~~~
+
+    **3. Create an event**
+
+    Create an event with a known `contact_id`, or pass a top-level `contact` object to create or reuse a contact
+    inline. Use `start_time` and `end_time` for new integrations; `start_date` and `end_date` are deprecated.
+
+    ~~~
+    curl https://api.perfectvenue.com/api/v1/events \
+      -H "Authorization: Bearer ACCESS_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "event": {
+          "venue_id": "VENUE_ID",
+          "contact_id": "CONTACT_ID",
+          "name": "Henry's Wedding",
+          "start_time": "2026-08-15T18:00:00Z",
+          "end_time": "2026-08-15T23:00:00Z",
+          "group_size": 120,
+          "source": "Partner Integration",
+          "event_type": "Wedding",
+          "spaces": ["main-hall"],
+          "custom": {
+            "dietary_restrictions": "vegan"
+          }
+        },
+        "message": {
+          "text": "Interested in a Saturday evening reception."
+        }
+      }'
+    ~~~
+
+    **4. Sync events**
+
+    Use `GET /events` to backfill or reconcile data. Always pass `venue_id`; use pagination for large result sets.
+
+    ~~~
+    curl "https://api.perfectvenue.com/api/v1/events?venue_id=VENUE_ID&per_page=100&page=1" \
+      -H "Authorization: Bearer ACCESS_TOKEN"
+    ~~~
+
+    For incremental syncs, filter by `updated_at`:
+
+    ~~~
+    curl "https://api.perfectvenue.com/api/v1/events?venue_id=VENUE_ID&date_field=updated_at&date_from=2026-06-01T00:00:00Z&date_to=2026-06-30T23:59:59Z" \
+      -H "Authorization: Bearer ACCESS_TOKEN"
+    ~~~
+
+    # Data model notes
+
+      * `venue_id` identifies a venue available to the authorizing Perfect Venue user and is required for creating contacts and events.
+      * `contact_id` identifies the event's primary contact.
+      * `event_type` must match an event type configured for the venue.
+      * `spaces` should contain space slugs from the venue's `spaces` array.
+      * `custom` values are keyed by the venue's custom field `key`.
+      * Event timestamps are ISO 8601 strings. Use the venue's `timezone` when displaying local times to users.
+      * Money amounts are integer cents, for example `150000` for $1,500.00.
+
+    # Error handling
+
+    Most validation, permission, and not-found errors use `status: "fail"` and include one or more
+    messages in `data`.
+
+    ~~~json
+    {
+      "status": "fail",
+      "data": [
+        { "message": "End time must be after start time" }
+      ]
+    }
+    ~~~
+
+    Common error statuses:
+
+      * `400 Bad Request`: validation failed or required parameters are missing.
+      * `401 Unauthorized`: the access token is missing, invalid, or expired.
+      * `403 Forbidden`: the token does not grant access to the requested venue or resource.
+      * `404 Not Found`: the requested resource does not exist or is not visible to the authorizing Perfect Venue user.
+      * `429 Too Many Requests`: the access token exceeded the rate limit. Rate-limit responses use
+        a problem-details style JSON body with `title`, `status`, and `detail`.
+
     # Authentication
 
     The Perfect Venue API uses Bearer tokens for authentication. You can obtain a token by following the
@@ -29,10 +162,11 @@ info:
 
     ## Authorizing the app
 
-    Direct the user to the Authorization URL with the following query parameters:
+    Direct a Perfect Venue user to the Authorization URL with the following query parameters. The user must log in
+    and grant permission before your integration can receive an authorization code.
 
       * `response_type`: Set to "code"
-      * `client_id`: Your application’s unique client ID, provided during registration
+      * `client_id`: Your application's unique client ID, provided by Perfect Venue
       * `redirect_uri`: The URL to which the user will be redirected after authorization
       * `scope`: Space-separated list of permissions your application needs
       * `state`: (Optional but recommended) A random string to maintain state between the request and callback, helping to prevent [CSRF attacks](https://auth0.com/docs/secure/attack-protection/state-parameters)
@@ -45,7 +179,7 @@ info:
 
     ## Obtaining an access token
 
-    Once the user has authorized your application, they will be redirected to the specified
+    Once the Perfect Venue user has authorized your application, they will be redirected to the specified
     `redirect_uri` with a code parameter in the query string.  
 
 
@@ -75,6 +209,9 @@ info:
 
     Upon a successful token exchange, you’ll receive a JSON response with an access token.
     Include this token in the Authorization header as `Bearer <token>` for all authenticated requests.  
+
+    Access tokens represent the Perfect Venue user who authorized the application. API responses and writes
+    are limited to the venues and resources that user can access in Perfect Venue.
 
 
     Example API Request:
@@ -114,15 +251,16 @@ info:
     The API is rate limited to **100 requests per minute per access token**. If you exceed this
     limit, the API will respond with `429 Too Many Requests`.
 
-    Two headers are included on every response to help you track your usage:
+    When a request is rate limited, the response includes headers that help you decide when to retry:
 
     | Header | Description |
     | --- | --- |
-    | `RateLimit-Limit` | Maximum requests allowed per minute |
-    | `RateLimit-Remaining` | Requests remaining in the current window |
+    | `Retry-After` | Seconds to wait before retrying |
+    | `X-RateLimit-Limit` | Maximum requests allowed per minute |
+    | `X-RateLimit-Remaining` | Requests remaining in the current window |
+    | `X-RateLimit-Reset` | Unix timestamp when the current limit window resets |
 
-    When you receive a `429`, wait until the next minute window before retrying. If you need a
-    higher limit, contact eng@perfectvenue.com.
+    When you receive a `429`, wait before retrying. For API support, contact eng@perfectvenue.com.
 
 externalDocs:
   description: "Visit our Help Center for guides and tutorials"
@@ -136,55 +274,194 @@ tags:
     description: "Contact operations"
   - name: Webhooks
     description: |
-      Perfect Venue can notify your application in real time when things happen in a venue you have
-      access to — for example, when an event is created or a payment succeeds.
+      Perfect Venue can notify your application in real time when data changes for venues available
+      to the authorizing Perfect Venue user. Use webhooks for incremental updates, and use the REST API to
+      fetch the current resource state whenever you need to reconcile.
 
-      ## Setup
+      **Quick start**
 
-      Register a single HTTPS endpoint URL on your OAuth application and subscribe to the event
-      types you want to receive. Your endpoint will receive events only for venues whose users have
-      authorized your application.
+      Use this flow when adding webhook support:
 
-      ## Request format
+      1. Build an HTTPS endpoint that can receive `POST` requests from Perfect Venue.
+      2. Send Perfect Venue your endpoint URL and the event types your integration needs.
+      3. Perfect Venue will add the webhook endpoint and event subscriptions to your OAuth application.
+      4. Store the endpoint signing secret provided during setup.
+      5. Verify the `PV-Signature` header on every delivery.
+      6. Use `PV-Webhook-Id` as your idempotency key.
+      7. Return a `2xx` response only after you have safely accepted the delivery.
+      8. Fetch the latest resource from the REST API when your local copy needs reconciliation.
 
-      Each delivery is an HTTPS POST with `Content-Type: application/json`. The body follows this
-      envelope:
+      **Subscribing to events**
+
+      Webhook subscriptions are configured by Perfect Venue during integration setup. To subscribe,
+      send eng@perfectvenue.com:
+
+      | Field | Description |
+      | --- | --- |
+      | Endpoint URL | The HTTPS URL where Perfect Venue should send webhook deliveries |
+      | Event types | One or more public event type names from the table below |
+      | OAuth application | The OAuth application Perfect Venue configured for your integration |
+
+      Example setup request:
+
+      ```text
+      Endpoint URL: https://example.com/perfect-venue/webhooks
+      Event types: event.created, event.status_changed, event.deleted, contact.created
+      OAuth application: Partner Integration Name
+      ```
+
+      Perfect Venue configures webhook subscriptions on your OAuth application. Your endpoint can
+      subscribe to multiple event types.
+
+      Your endpoint must be reachable over HTTPS and should be prepared to receive duplicate
+      deliveries.
+
+      Your endpoint receives events only for venues available to users who have authorized your OAuth application.
+
+      **Delivery request**
+
+      Each delivery is an HTTPS `POST` to your configured endpoint.
+
+      Required headers:
+
+      | Header | Description |
+      | --- | --- |
+      | `Content-Type` | Always `application/json` |
+      | `PV-Webhook-Id` | Stable delivery ID. Use this to deduplicate retries. |
+      | `PV-Signature` | Timestamped HMAC signature used to verify the request. |
+
+      Example delivery:
+
+      ```http
+      POST /perfect-venue/webhooks HTTP/1.1
+      Content-Type: application/json
+      PV-Webhook-Id: f8c1a0e2-6d2f-4a0d-99a2-1fd6f9f3c1aa
+      PV-Signature: t=1718557200,v1=5257a869e7ecebeda32affa62cdca3fa...
+      ```
+
+      **Payload envelope**
+
+      The JSON body always follows this envelope:
 
       ```json
       {
-        "id": "f8c1a0e2-...",
+        "id": "f8c1a0e2-6d2f-4a0d-99a2-1fd6f9f3c1aa",
         "type": "event.created",
         "api_version": "2026-06-01",
         "created_at": "2026-06-16T17:00:00Z",
-        "data": { }
+        "data": {
+          "id": "dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3",
+          "venue_id": "VENUE_ID",
+          "contact_id": "CONTACT_ID",
+          "name": "Henry's Wedding",
+          "status": "lead",
+          "start_time": "2026-08-15T18:00:00Z",
+          "end_time": "2026-08-15T23:00:00Z",
+          "event_type": "Wedding",
+          "spaces": ["main-hall"],
+          "created_at": "2026-06-16T17:00:00Z",
+          "updated_at": "2026-06-16T17:00:00Z"
+        }
       }
       ```
 
-      The `data` object contains the payload for the specific event type, documented below.
+      The `data` object contains the payload for the specific event type.
 
-      ## Event types
+      **Event types**
 
       | Type | Fires when |
       | --- | --- |
       | `event.created` | An event (booking or lead) is created |
       | `event.status_changed` | An event's status changes; payload includes the previous status |
       | `event.deleted` | An event is deleted (soft deleted) |
-      | `contact.created` | A new inbound inquiry arrives (contact forms, the lead form API, and Tock, Knot, or OpenTable imports) |
+      | `contact.created` | A new inbound inquiry arrives |
 
-      ### event.created / event.deleted
+      **Payloads**
+
+      **`event.created` and `event.deleted`**
 
       The `data` payload is the Event object — the same shape returned by
       [Get Event](#tag/Events/operation/getEvent) and [List Events](#tag/Events/operation/listEvents).
 
-      ### contact.created
+      Example `event.created` payload:
+
+      ```json
+      {
+        "id": "f8c1a0e2-6d2f-4a0d-99a2-1fd6f9f3c1aa",
+        "type": "event.created",
+        "api_version": "2026-06-01",
+        "created_at": "2026-06-16T17:00:00Z",
+        "data": {
+          "id": "dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3",
+          "venue_id": "VENUE_ID",
+          "contact_id": "CONTACT_ID",
+          "name": "Henry's Wedding",
+          "status": "lead",
+          "start_time": "2026-08-15T18:00:00Z",
+          "end_time": "2026-08-15T23:00:00Z",
+          "group_size": 120,
+          "source": "Partner Integration",
+          "campaign": "Summer 2026",
+          "amount": 150000,
+          "event_type": "Wedding",
+          "spaces": ["main-hall"],
+          "created_at": "2026-06-16T17:00:00Z",
+          "updated_at": "2026-06-16T17:00:00Z"
+        }
+      }
+      ```
+
+      Example `event.deleted` payload:
+
+      ```json
+      {
+        "id": "9be6ab48-55f2-46f3-bd07-74af424c0f03",
+        "type": "event.deleted",
+        "api_version": "2026-06-01",
+        "created_at": "2026-06-17T15:30:00Z",
+        "data": {
+          "id": "dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3",
+          "venue_id": "VENUE_ID",
+          "contact_id": "CONTACT_ID",
+          "name": "Henry's Wedding",
+          "status": "lost",
+          "start_time": "2026-08-15T18:00:00Z",
+          "end_time": "2026-08-15T23:00:00Z",
+          "event_type": "Wedding",
+          "spaces": ["main-hall"],
+          "created_at": "2026-06-16T17:00:00Z",
+          "updated_at": "2026-06-17T15:30:00Z"
+        }
+      }
+      ```
+
+      **`contact.created`**
 
       The `data` payload is the Contact object — the same shape returned by
       [Get Contact](#tag/Contacts/operation/getContact).
 
-      Only fires for inbound inquiry origins (contact forms, the lead form API, and imports from
-      Tock, Knot, or OpenTable). Staff-created contacts and migrated records do not emit this event.
+      Only inbound inquiries emit this event.
 
-      ### event.status_changed
+      Example `contact.created` payload:
+
+      ```json
+      {
+        "id": "7f6adfe6-9e01-4644-b850-3877b56526c8",
+        "type": "contact.created",
+        "api_version": "2026-06-01",
+        "created_at": "2026-06-16T17:00:00Z",
+        "data": {
+          "id": "CONTACT_ID",
+          "venue_id": "VENUE_ID",
+          "first_name": "Ada",
+          "last_name": "Lovelace",
+          "email": "ada@example.com",
+          "phone": "+14155550100"
+        }
+      }
+      ```
+
+      **`event.status_changed`**
 
       A thin payload carrying only what changed. Use the `id` to fetch the full event from the
       REST API if you need other fields.
@@ -197,7 +474,25 @@ tags:
       | `previous_status` | string\|null | Status before the change |
       | `updated_at` | string | ISO 8601 timestamp of the change |
 
-      ## Verifying the signature
+      Example:
+
+      ```json
+      {
+        "id": "f8c1a0e2-6d2f-4a0d-99a2-1fd6f9f3c1aa",
+        "type": "event.status_changed",
+        "api_version": "2026-06-01",
+        "created_at": "2026-06-16T17:00:00Z",
+        "data": {
+          "id": "dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3",
+          "venue_id": "VENUE_ID",
+          "status": "confirmed",
+          "previous_status": "proposal_sent",
+          "updated_at": "2026-06-16T17:00:00Z"
+        }
+      }
+      ```
+
+      **Signature verification**
 
       Every delivery includes a `PV-Signature` header:
 
@@ -207,12 +502,46 @@ tags:
 
       `t` is the Unix timestamp the request was signed. `v1` is the HMAC-SHA256 hex digest of
       `"#{msg_id}.#{t}.#{raw_body}"` where `msg_id` is the value of the `PV-Webhook-Id` header,
-      computed with your endpoint's signing secret. Verify by recomputing the HMAC with your
-      secret and comparing it to `v1`. Reject requests where `t` is too far from the current
-      time (we recommend a 5-minute tolerance). Including `msg_id` in the signed content means
-      a replay attack with a swapped `PV-Webhook-Id` will fail verification.
+      computed with your endpoint's signing secret.
 
-      ## Idempotency
+      Verification steps:
+
+      1. Read the raw request body before parsing JSON.
+      2. Parse `t` and `v1` from `PV-Signature`.
+      3. Reject requests where `t` is too far from the current time. We recommend a 5-minute tolerance.
+      4. Build the signed payload as `PV-Webhook-Id + "." + t + "." + raw_body`.
+      5. Compute the HMAC-SHA256 hex digest with your endpoint signing secret.
+      6. Compare the computed digest to `v1` using a constant-time comparison.
+
+      Including `PV-Webhook-Id` in the signed content means a replay attack with a swapped webhook ID
+      will fail verification.
+
+      Example Node.js verifier:
+
+      ```javascript
+      const crypto = require("crypto");
+
+      function verifyPerfectVenueWebhook({ rawBody, webhookId, signatureHeader, signingSecret }) {
+        const parts = Object.fromEntries(
+          signatureHeader.split(",").map((part) => part.split("="))
+        );
+        const timestamp = parts.t;
+        const expected = parts.v1;
+
+        const signedPayload = `${webhookId}.${timestamp}.${rawBody}`;
+        const actual = crypto
+          .createHmac("sha256", signingSecret)
+          .update(signedPayload)
+          .digest("hex");
+
+        return crypto.timingSafeEqual(
+          Buffer.from(actual, "hex"),
+          Buffer.from(expected, "hex")
+        );
+      }
+      ```
+
+      **Idempotency**
 
       The `PV-Webhook-Id` header (and the `id` field in the body) is a stable identifier for an
       event delivery. It does not change across retries. Use it to deduplicate: if you have already
@@ -220,20 +549,31 @@ tags:
 
       Delivery is at-least-once. Your handler must be safe to run twice for the same `PV-Webhook-Id`.
 
-      ## Ordering
+      **Response handling**
+
+      Return a `2xx` status after your endpoint has accepted the delivery. Any non-2xx response,
+      timeout, or connection error is treated as a failed delivery and retried.
+
+      Recommended handler behavior:
+
+      1. Verify the signature.
+      2. Check whether `PV-Webhook-Id` has already been processed.
+      3. Persist the delivery or enqueue work in your system.
+      4. Return `2xx`.
+      5. Process the event asynchronously when possible.
+
+      **Ordering and sync**
 
       There is no global ordering guarantee. Deliveries are dispatched concurrently and can arrive
       out of order. Events about the same resource carry a `created_at` you can order by, and you
-      can always read the current state from the REST API to reconcile.
+      can always read the current state from the REST API to reconcile. For high-confidence syncs,
+      combine webhooks with periodic `GET /events` backfills filtered by `updated_at`.
 
-      ## Retries and endpoint health
+      **Retries and endpoint health**
 
-      Respond with a 2xx status to acknowledge a delivery. Any non-2xx response or connection
-      error is treated as a failure and retried with exponential backoff over several days.
+      Failed deliveries are retried automatically.
 
-      If an endpoint fails repeatedly with no successful delivery in between, we disable it and
-      notify the application's contact email. A disabled endpoint can be re-enabled once it is
-      healthy again; re-enabling resumes new deliveries.
+      If an endpoint fails repeatedly, it may be disabled until it is healthy again.
 
   - name: Changelog
     description: |
@@ -304,7 +644,7 @@ tags:
       |---|---|---|
       | `amount` | integer | Estimated event value in cents (e.g. `150000` for $1,500.00) |
       | `event_type` | string | Event type name, must match a type configured for the venue |
-      | `spaces` | string[] | IDs of spaces to assign to the event |
+      | `spaces` | string[] | Space slugs to assign to the event |
       | `custom` | object | Custom field values keyed by field key |
 
       **Inline contact creation on [Create Event](#tag/Events/operation/createEvent)**
@@ -350,6 +690,260 @@ paths:
     $ref: 'paths/contacts.yaml'
   '/contacts/{contact_id}':
     $ref: 'paths/contacts_{contact_id}.yaml'
+webhooks:
+  eventCreated:
+    post:
+      tags:
+        - Webhooks
+      summary: event.created
+      description: |
+        Sent when an event is created for a venue available to a Perfect Venue user who authorized your application.
+      operationId: eventCreatedWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - type
+                - api_version
+                - created_at
+                - data
+              properties:
+                id:
+                  type: string
+                  description: Stable webhook delivery ID. Matches the `PV-Webhook-Id` header.
+                type:
+                  type: string
+                  enum: [event.created]
+                api_version:
+                  type: string
+                  example: "2026-06-01"
+                created_at:
+                  type: string
+                  format: date-time
+                data:
+                  type: object
+                  description: Event object. Same shape returned by Get Event and List Events.
+            examples:
+              event_created:
+                summary: Event created
+                value:
+                  id: f8c1a0e2-6d2f-4a0d-99a2-1fd6f9f3c1aa
+                  type: event.created
+                  api_version: "2026-06-01"
+                  created_at: "2026-06-16T17:00:00Z"
+                  data:
+                    id: dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3
+                    venue_id: VENUE_ID
+                    contact_id: CONTACT_ID
+                    name: Henry's Wedding
+                    status: lead
+                    start_time: "2026-08-15T18:00:00Z"
+                    end_time: "2026-08-15T23:00:00Z"
+                    group_size: 120
+                    source: Partner Integration
+                    campaign: Summer 2026
+                    amount: 150000
+                    event_type: Wedding
+                    spaces:
+                      - main-hall
+                    created_at: "2026-06-16T17:00:00Z"
+                    updated_at: "2026-06-16T17:00:00Z"
+      responses:
+        '200':
+          description: Return any 2xx status after safely accepting the delivery.
+  eventStatusChanged:
+    post:
+      tags:
+        - Webhooks
+      summary: event.status_changed
+      description: |
+        Sent when an event status changes. Fetch the event from the REST API if you need the full current event state.
+      operationId: eventStatusChangedWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - type
+                - api_version
+                - created_at
+                - data
+              properties:
+                id:
+                  type: string
+                  description: Stable webhook delivery ID. Matches the `PV-Webhook-Id` header.
+                type:
+                  type: string
+                  enum: [event.status_changed]
+                api_version:
+                  type: string
+                  example: "2026-06-01"
+                created_at:
+                  type: string
+                  format: date-time
+                data:
+                  type: object
+                  required:
+                    - id
+                    - venue_id
+                    - status
+                    - updated_at
+                  properties:
+                    id:
+                      type: string
+                      description: Event ID
+                    venue_id:
+                      type: string
+                      description: Venue ID
+                    status:
+                      type: string
+                      description: New status
+                    previous_status:
+                      type:
+                        - string
+                        - "null"
+                      description: Status before the change
+                    updated_at:
+                      type: string
+                      format: date-time
+            examples:
+              event_status_changed:
+                summary: Event status changed
+                value:
+                  id: f8c1a0e2-6d2f-4a0d-99a2-1fd6f9f3c1aa
+                  type: event.status_changed
+                  api_version: "2026-06-01"
+                  created_at: "2026-06-16T17:00:00Z"
+                  data:
+                    id: dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3
+                    venue_id: VENUE_ID
+                    status: confirmed
+                    previous_status: proposal_sent
+                    updated_at: "2026-06-16T17:00:00Z"
+      responses:
+        '200':
+          description: Return any 2xx status after safely accepting the delivery.
+  eventDeleted:
+    post:
+      tags:
+        - Webhooks
+      summary: event.deleted
+      description: |
+        Sent when an event is deleted.
+      operationId: eventDeletedWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - type
+                - api_version
+                - created_at
+                - data
+              properties:
+                id:
+                  type: string
+                  description: Stable webhook delivery ID. Matches the `PV-Webhook-Id` header.
+                type:
+                  type: string
+                  enum: [event.deleted]
+                api_version:
+                  type: string
+                  example: "2026-06-01"
+                created_at:
+                  type: string
+                  format: date-time
+                data:
+                  type: object
+                  description: Event object. Same shape returned by Get Event and List Events.
+            examples:
+              event_deleted:
+                summary: Event deleted
+                value:
+                  id: 9be6ab48-55f2-46f3-bd07-74af424c0f03
+                  type: event.deleted
+                  api_version: "2026-06-01"
+                  created_at: "2026-06-17T15:30:00Z"
+                  data:
+                    id: dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3
+                    venue_id: VENUE_ID
+                    contact_id: CONTACT_ID
+                    name: Henry's Wedding
+                    status: lost
+                    start_time: "2026-08-15T18:00:00Z"
+                    end_time: "2026-08-15T23:00:00Z"
+                    event_type: Wedding
+                    spaces:
+                      - main-hall
+                    created_at: "2026-06-16T17:00:00Z"
+                    updated_at: "2026-06-17T15:30:00Z"
+      responses:
+        '200':
+          description: Return any 2xx status after safely accepting the delivery.
+  contactCreated:
+    post:
+      tags:
+        - Webhooks
+      summary: contact.created
+      description: |
+        Sent when a new inbound inquiry creates a contact.
+      operationId: contactCreatedWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - type
+                - api_version
+                - created_at
+                - data
+              properties:
+                id:
+                  type: string
+                  description: Stable webhook delivery ID. Matches the `PV-Webhook-Id` header.
+                type:
+                  type: string
+                  enum: [contact.created]
+                api_version:
+                  type: string
+                  example: "2026-06-01"
+                created_at:
+                  type: string
+                  format: date-time
+                data:
+                  type: object
+                  description: Contact object. Same shape returned by Get Contact.
+            examples:
+              contact_created:
+                summary: Contact created
+                value:
+                  id: 7f6adfe6-9e01-4644-b850-3877b56526c8
+                  type: contact.created
+                  api_version: "2026-06-01"
+                  created_at: "2026-06-16T17:00:00Z"
+                  data:
+                    id: CONTACT_ID
+                    venue_id: VENUE_ID
+                    first_name: Ada
+                    last_name: Lovelace
+                    email: ada@example.com
+                    phone: "+14155550100"
+      responses:
+        '200':
+          description: Return any 2xx status after safely accepting the delivery.
 components:
   securitySchemes:
     oauth2:
