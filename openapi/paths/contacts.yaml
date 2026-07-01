@@ -21,6 +21,16 @@ post:
           properties:
             contact:
               $ref: "../components/schemas/CreateContactInput.yaml"
+        examples:
+          create_contact:
+            summary: Create a contact for a venue
+            value:
+              contact:
+                venue_id: VENUE_ID
+                first_name: Ada
+                last_name: Lovelace
+                email: ada@example.com
+                phone: "+14155550100"
   responses:
     '200':
       description: Success
