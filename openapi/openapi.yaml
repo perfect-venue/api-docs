@@ -156,7 +156,7 @@ info:
       5. Your server exchanges that code for an access token and refresh token.
       6. Your integration uses the access token when calling the API.
 
-    Access is scoped to the Perfect Venue user who authorized the application. For example, if that
+    Access is limited to the Perfect Venue user who authorized the application. For example, if that
     user can access two venues, `GET /venues` returns those venues and API writes are limited to
     resources that user can access.
 
@@ -181,43 +181,12 @@ info:
       * `response_type`: Set to "code"
       * `client_id`: Your application's unique client ID, provided by Perfect Venue
       * `redirect_uri`: The URL to which the user will be redirected after authorization
-      * `scope`: Space-separated list of permissions approved for your application
       * `state`: (Optional but recommended) A random string to maintain state between the request and callback, helping to prevent [CSRF attacks](https://auth0.com/docs/secure/attack-protection/state-parameters)
-
-    Perfect Venue will confirm which scopes your integration should request during setup. Request only
-    the scopes approved for your application. If you omit `scope`, the default `public` scope is used.
-
-    Public API scopes:
-
-    | Scope | Use |
-    | --- | --- |
-    | `public` | Default scope for authenticated API access |
-    | `read` | Additional read scope that Perfect Venue may approve for your application |
-    | `write` | Additional write scope that Perfect Venue may approve for your application |
-    | `contacts_read` | Additional contact read scope that Perfect Venue may approve for your application |
-
-    The endpoints documented in this guide currently require an authenticated OAuth access token.
-    Because `public` is the default scope, the documented endpoints are available to tokens with
-    the `public` scope, subject to the authorizing user's venue and resource permissions.
-
-    Scope-to-endpoint mapping:
-
-    | Endpoint | Required scope | Notes |
-    | --- | --- | --- |
-    | `GET /venues` | `public` | Returns venues available to the authorizing Perfect Venue user |
-    | `GET /venues/{venue_id}` | `public` | Returns a venue only if the authorizing user can access it |
-    | `GET /events` | `public` | Requires `venue_id`; returns only events for an accessible venue |
-    | `POST /events` | `public` | Creates an event only in an accessible venue |
-    | `GET /events/{event_id}` | `public` | Returns an event only if the authorizing user can access its venue |
-    | `PATCH /events/{event_id}` | `public` | Updates an event only if the authorizing user can access its venue |
-    | `POST /contacts` | `public` | Creates a contact only in an accessible venue |
-    | `GET /contacts/{contact_id}` | `public` | Returns a contact only if the authorizing user can access its venue |
-    | `PUT /contacts/{contact_id}` | `public` | Updates a contact only if the authorizing user can access its venue |
 
     Example Authorization URL:
 
     ~~~
-      https://api.perfectvenue.com/oauth/authorize?response_type=code&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=public%20read%20write&state=RANDOM_STRING
+      https://api.perfectvenue.com/oauth/authorize?response_type=code&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&state=RANDOM_STRING
     ~~~ 
 
     Always validate the `state` value on the callback before exchanging the authorization code.
@@ -259,7 +228,6 @@ info:
       "token_type": "Bearer",
       "expires_in": 7200,
       "refresh_token": "REFRESH_TOKEN",
-      "scope": "public read write",
       "created_at": 1782950400
     }
     ~~~
@@ -334,6 +302,10 @@ info:
     | --- | --- | --- |
     | `token` | Yes | Access token or refresh token to revoke |
     | `token_type_hint` | No | Optional hint such as `access_token` or `refresh_token` |
+
+    Successful revocation returns `200 OK` with an empty JSON body. The endpoint also returns
+    `200 OK` for missing, invalid, or already revoked tokens. If the token was issued to a
+    different OAuth client, Perfect Venue returns `403 Forbidden` with `unauthorized_client`.
 
     After revoking a token, remove it from your system. If your integration needs access again,
     send the Perfect Venue user through the OAuth authorization flow to receive new tokens.
@@ -830,8 +802,7 @@ webhooks:
                   type: string
                   format: date-time
                 data:
-                  type: object
-                  description: Event object. Same shape returned by Get Event and List Events.
+                  $ref: '#/components/schemas/WebhookEventData'
             examples:
               event_created:
                 summary: Event created
@@ -943,7 +914,7 @@ webhooks:
         - Webhooks
       summary: event.deleted
       description: |
-        Sent when an event is deleted.
+        Sent when an event is deleted. Events are soft deleted, so the `data` object contains the event's last public shape.
       operationId: eventDeletedWebhook
       requestBody:
         required: true
@@ -971,8 +942,7 @@ webhooks:
                   type: string
                   format: date-time
                 data:
-                  type: object
-                  description: Event object. Same shape returned by Get Event and List Events.
+                  $ref: '#/components/schemas/WebhookEventData'
             examples:
               event_deleted:
                 summary: Event deleted
@@ -991,6 +961,10 @@ webhooks:
                     end_date: "2026-08-15T23:00:00Z"
                     start_time: "2026-08-15T18:00:00Z"
                     end_time: "2026-08-15T23:00:00Z"
+                    group_size: 120
+                    source: Partner Integration
+                    campaign: Summer 2026
+                    amount: 150000
                     event_type: Wedding
                     spaces:
                       - main-hall
@@ -1033,8 +1007,7 @@ webhooks:
                   type: string
                   format: date-time
                 data:
-                  type: object
-                  description: Contact object. Same shape returned by Get Contact.
+                  $ref: '#/components/schemas/WebhookContactData'
             examples:
               contact_created:
                 summary: Contact created
@@ -1055,18 +1028,130 @@ webhooks:
           description: Return any 2xx status after safely accepting the delivery.
 components:
   securitySchemes:
-    oauth2:
-      type: oauth2
-      flows:
-        authorizationCode:
-          authorizationUrl: https://api.perfectvenue.com/oauth/authorize
-          tokenUrl: https://api.perfectvenue.com/oauth/token
-          refreshUrl: https://api.perfectvenue.com/oauth/token
-          scopes:
-            public:
     bearerHttpAuthentication:
       description: Bearer token using an access token obtained from the authorization server
       type: http
       scheme: Bearer
+  schemas:
+    WebhookEventData:
+      description: Event object emitted by event webhooks. This uses the same serializer as Get Event and List Events.
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - venue_id
+        - contact_id
+        - name
+        - status
+        - group_size
+        - start_date
+        - end_date
+        - start_time
+        - end_time
+        - source
+        - campaign
+        - amount
+        - event_type
+        - spaces
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Event ID
+        venue_id:
+          type: string
+          description: Venue ID
+        contact_id:
+          type: string
+          description: Contact ID
+        name:
+          type:
+            - string
+            - "null"
+        status:
+          type: string
+        group_size:
+          type:
+            - integer
+            - "null"
+        start_date:
+          type:
+            - string
+            - "null"
+          deprecated: true
+        end_date:
+          type:
+            - string
+            - "null"
+          deprecated: true
+        start_time:
+          type:
+            - string
+            - "null"
+        end_time:
+          type:
+            - string
+            - "null"
+        source:
+          type:
+            - string
+            - "null"
+        campaign:
+          type:
+            - string
+            - "null"
+        amount:
+          type:
+            - number
+            - "null"
+        event_type:
+          type:
+            - string
+            - "null"
+        spaces:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    WebhookContactData:
+      description: Contact object emitted by contact.created. This uses the same serializer as Get Contact.
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - venue_id
+        - first_name
+        - last_name
+        - email
+        - phone
+      properties:
+        id:
+          type: string
+          description: Contact ID
+        venue_id:
+          type:
+            - string
+            - "null"
+          description: Venue ID
+        first_name:
+          type:
+            - string
+            - "null"
+        last_name:
+          type:
+            - string
+            - "null"
+        email:
+          type:
+            - string
+            - "null"
+        phone:
+          type:
+            - string
+            - "null"
 security:
   - bearerHttpAuthentication: []
