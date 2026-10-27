@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  version: 1.3.0
+  version: 1.4.0
   title: Perfect Venue REST API Docs
   contact:
     name: Perfect Venue Engineering
@@ -28,7 +28,7 @@ info:
 
       1. Contact Perfect Venue to provision OAuth access for your integration.
       2. Perfect Venue will configure your OAuth application and provide client credentials to your partner developer team.
-      3. Send a Perfect Venue user with access to the relevant venues through the OAuth authorization code flow.
+      3. Send a Perfect Venue user with access to the relevant venues through the OAuth authorization code flow, requesting the [scopes](#section/Authentication/Scopes) you need.
       4. Exchange the authorization code for an access token and refresh token.
       5. Call `GET /venues` to find the venues available to the authorizing Perfect Venue user.
       6. Store the Perfect Venue `venue_id` values in your system.
@@ -118,28 +118,83 @@ info:
       * Event timestamps are ISO 8601 strings. Use the venue's `timezone` when displaying local times to users.
       * Money amounts are integer cents, for example `150000` for $1,500.00.
 
+    # Versioning
+
+    Send a `PV-Version` header to choose the response format. Without it, every endpoint keeps the
+    default format it has always returned, so existing integrations don't change. New integrations
+    should send the latest version.
+
+    ~~~
+    curl https://api.perfectvenue.com/api/v1/venues \
+      -H "Authorization: Bearer ACCESS_TOKEN" \
+      -H "PV-Version: 2026-11-01"
+    ~~~
+
+    | Version | What changes |
+    | --- | --- |
+    | Default (no header) | Successful responses are `{"status": "success", "data": ...}`. Errors use the formats in [Error handling](#section/Error-handling). |
+    | `2026-11-01` | Successful responses are `{"data": ...}`, with list paging in a top level `meta`. Every error is a problem details body with a `request_id`. [List contacts](#tag/Contacts/operation/listContacts) is available. |
+
+    The response echoes the version you sent in a `PV-Version` header. An unknown version returns
+    `400 Bad Request` naming the supported versions.
+
     # Error handling
 
-    Most validation, permission, and not-found errors use `status: "fail"` and include one or more
-    messages in `data`.
+    Under `PV-Version: 2026-11-01`, every error uses the problem details format
+    ([RFC 9457](https://www.rfc-editor.org/rfc/rfc9457)). Branch on `type`, which stays the same
+    when the wording of `detail` changes.
+
+    ~~~json
+    {
+      "type": "https://docs.perfectvenue.com/api/errors/not-found",
+      "title": "Not found",
+      "status": 404,
+      "detail": "Venue not found",
+      "request_id": "9f6c2b0e-4a1d-4c55-8a3e-2f7d1c9b6a10"
+    }
+    ~~~
+
+    Some validation errors also include `errors`, an array of `field`, `code`, and `message`.
+
+    | `type` ends with | Status | Meaning |
+    | --- | --- | --- |
+    | `invalid-request` | 400 | A parameter is missing or invalid, or `PV-Version` is unknown |
+    | `validation-error` | 400 | The record failed validation |
+    | `authentication-error` | 401 | The access token is missing, invalid, expired, or revoked |
+    | `insufficient-scope` | 403 | The token is missing a required [scope](#section/Authentication/Scopes) |
+    | `forbidden` | 403 | The authorizing user can't access the venue or resource |
+    | `not-found` | 404 | The resource doesn't exist or isn't visible to the authorizing user |
+    | `internal-error` | 500 | Something went wrong on our side |
+
+    Without `PV-Version`, most errors use `status: "fail"` with messages in `data.errors`:
 
     ~~~json
     {
       "status": "fail",
-      "data": [
-        { "message": "End time must be after start time" }
-      ]
+      "data": {
+        "errors": [
+          { "message": "End time must be after start time" }
+        ]
+      }
     }
     ~~~
 
-    Common error statuses:
+    In the default format, a missing, invalid, or expired token returns `401` with an empty body.
+    The reason is in the `WWW-Authenticate` header, for example
+    `Bearer realm="Doorkeeper", error="invalid_token", error_description="The access token is invalid"`.
+    A missing scope on an application created before 2026-11-01 works the same way with `403` and
+    `error="insufficient_scope"`. Other missing scopes return the `status: "fail"` body with
+    `code: "insufficient_scope"`. Unexpected server errors return
+    `{"status": "error", "message": "Internal server error"}`.
 
-      * `400 Bad Request`: validation failed or required parameters are missing.
-      * `401 Unauthorized`: the access token is missing, invalid, or expired.
-      * `403 Forbidden`: the token does not grant access to the requested venue or resource.
-      * `404 Not Found`: the requested resource does not exist or is not visible to the authorizing Perfect Venue user.
-      * `429 Too Many Requests`: the access token exceeded the rate limit. Rate-limit responses use
-        a problem-details style JSON body with `title`, `status`, and `detail`.
+    Rate limited requests return `429 Too Many Requests` with a problem details body in every
+    version. See [Rate limiting](#section/Rate-limiting).
+
+    # Request IDs
+
+    Every response has an `X-Request-Id` header. Problem details bodies, including rate limit
+    responses, repeat it as `request_id`. Log it with failed requests and include it when you contact
+    eng@perfectvenue.com, so we can find the request.
 
     # Authentication
 
@@ -181,12 +236,13 @@ info:
       * `response_type`: Set to "code"
       * `client_id`: Your application's unique client ID, provided by Perfect Venue
       * `redirect_uri`: The URL to which the user will be redirected after authorization
+      * `scope`: Space separated [scopes](#section/Authentication/Scopes) your integration needs, for example `public read write`. Leave it out to request only `public`.
       * `state`: (Optional but recommended) A random string to maintain state between the request and callback, helping to prevent [CSRF attacks](https://auth0.com/docs/secure/attack-protection/state-parameters)
 
     Example Authorization URL:
 
     ~~~
-      https://api.perfectvenue.com/oauth/authorize?response_type=code&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&state=RANDOM_STRING
+      https://api.perfectvenue.com/oauth/authorize?response_type=code&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&scope=public%20read%20write&state=RANDOM_STRING
     ~~~ 
 
     Always validate the `state` value on the callback before exchanging the authorization code.
@@ -228,12 +284,33 @@ info:
       "token_type": "Bearer",
       "expires_in": 7200,
       "refresh_token": "REFRESH_TOKEN",
+      "scope": "public read write",
       "created_at": 1782950400
     }
     ~~~
 
-    Store tokens securely. Access tokens are short-lived. Refresh tokens should be treated like
-    passwords because they can be exchanged for new access tokens.
+    Store tokens securely. Access tokens last 2 hours (`expires_in` is in seconds). Refresh tokens
+    should be treated like passwords because they can be exchanged for new access tokens.
+
+    ## Scopes
+
+    The user sees the scopes you request on the consent screen, and the access token can only do
+    what they cover. Request the smallest set your integration needs.
+
+    | Scope | Grants | Consent screen text |
+    | --- | --- | --- |
+    | `public` | The default scope, granted to every token | Perfect Venue public API access |
+    | `read` | Reading venues, events, and contacts | View your venues, events, and contacts |
+    | `write` | Creating and updating events and contacts | Create and update your events and contacts |
+    | `contacts_read` | [List contacts](#tag/Contacts/operation/listContacts) | Contacts name and email |
+    | `users_read` | [List team members](#tag/Users/operation/listUsers) and [Get team member](#tag/Users/operation/getUser) | Names, roles, and email addresses of your team members |
+
+    `read` and `write` are separate: a token with only `write` can't read. Applications created
+    before 2026-11-01 don't need `read` or `write`; their `public` tokens keep working for venues,
+    events, and contacts.
+
+    A request with a token that lacks the scope returns `403 Forbidden`, and the body names the
+    missing scope.
 
     ## Using access tokens
 
@@ -280,6 +357,10 @@ info:
     `401 Unauthorized` because the access token is expired. If a refresh request fails, send the
     Perfect Venue user through the authorization flow again.
 
+    Each refresh returns a new refresh token as well as a new access token, with the same scopes.
+    Store the new refresh token. The previous one stops working once you use the new access token.
+    Refresh tokens don't expire on their own; they stop working when revoked.
+
     ## Revoking tokens
 
     Use token revocation when a user disconnects your integration, when you rotate stored
@@ -316,6 +397,7 @@ info:
     | --- | --- | --- |
     | `401 Unauthorized` | The access token is missing, invalid, expired, or revoked | Refresh the token or send the user through OAuth again |
     | `403 Forbidden` | The token is valid, but the authorizing user does not have access to the requested venue or resource | Ask the user to confirm their Perfect Venue permissions or authorize with a different user |
+    | `403 Forbidden` (missing scope) | The token doesn't have a scope the endpoint requires; the body names it | Send the user through OAuth again, requesting that scope |
 
     # Rate limiting
 
@@ -331,6 +413,18 @@ info:
     | `X-RateLimit-Remaining` | Requests remaining in the current window |
     | `X-RateLimit-Reset` | Unix timestamp when the current limit window resets |
 
+    The `429` body is a problem details object in every version, with a `request_id`:
+
+    ~~~json
+    {
+      "type": "https://docs.perfectvenue.com/lead-form-api/errors/rate-limited",
+      "title": "Rate limit exceeded",
+      "status": 429,
+      "detail": "You have exceeded 100 requests per minute. Try again in 42 seconds.",
+      "request_id": "9f6c2b0e-4a1d-4c55-8a3e-2f7d1c9b6a10"
+    }
+    ~~~
+
     When you receive a `429`, wait before retrying. For API support, contact eng@perfectvenue.com.
 
 externalDocs:
@@ -343,6 +437,8 @@ tags:
     description: "Event operations"
   - name: Contact
     description: "Contact operations"
+  - name: Users
+    description: "Team members in the authorizing user's organization"
   - name: Webhooks
     description: |
       Perfect Venue can notify your application in real time when data changes for venues available
@@ -424,6 +520,7 @@ tags:
           "id": "dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3",
           "venue_id": "VENUE_ID",
           "contact_id": "CONTACT_ID",
+          "owner_id": "user_8xZk2LmQp4Vd7A",
           "name": "Henry's Wedding",
           "status": "lead",
           "start_date": "2026-08-15T18:00:00Z",
@@ -468,6 +565,7 @@ tags:
           "id": "dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3",
           "venue_id": "VENUE_ID",
           "contact_id": "CONTACT_ID",
+          "owner_id": "user_8xZk2LmQp4Vd7A",
           "name": "Henry's Wedding",
           "status": "lead",
           "start_date": "2026-08-15T18:00:00Z",
@@ -498,6 +596,7 @@ tags:
           "id": "dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3",
           "venue_id": "VENUE_ID",
           "contact_id": "CONTACT_ID",
+          "owner_id": "user_8xZk2LmQp4Vd7A",
           "name": "Henry's Wedding",
           "status": "lost",
           "start_date": "2026-08-15T18:00:00Z",
@@ -648,12 +747,72 @@ tags:
 
       **Retries and endpoint health**
 
-      Failed deliveries are retried automatically.
+      A failed delivery is retried up to 15 times with exponential backoff, which spreads the
+      retries over several days. Retries resend the payload exactly as it was first built.
 
-      If an endpoint fails repeatedly, it may be disabled until it is healthy again.
+      After 20 failed deliveries in a row with no success in between, Perfect Venue disables the
+      endpoint so it stops receiving deliveries, and emails your application's owners. Once the
+      endpoint is healthy, it can be turned back on to resume new deliveries.
+
+      **Payload changes**
+
+      We may add fields to an event type's `data` at any time. Each addition raises that type's schema
+      version and is listed in the [Changelog](#tag/Changelog). Ignore fields you don't recognize. If
+      you validate deliveries against a copy of these schemas, allow additional properties, or a new
+      field will make valid deliveries fail your check.
+
+      Removing or renaming a field, or changing its type, only happens under a new `api_version`.
+
+      | Date | Event types | Schema version | Change |
+      | --- | --- | --- | --- |
+      | 2026-10-21 | `event.created`, `event.deleted` | 2 | Added `owner_id`, the ID of the team member who owns the event, or `null` when it has no owner. Look the owner up with [Get team member](#tag/Users/operation/getUser), which needs the `users_read` scope. |
 
   - name: Changelog
     description: |
+      ## 1.4.0 (unreleased)
+
+      ### Versioning and errors
+
+      **New `PV-Version` header.** Send `PV-Version: 2026-11-01` to get `{"data": ...}` responses and
+      problem details errors on every endpoint. Requests without the header are unchanged. See
+      [Versioning](#section/Versioning).
+
+      **Request IDs.** Every response has an `X-Request-Id` header, and problem details bodies repeat
+      it as `request_id`. See [Request IDs](#section/Request-IDs).
+
+      **Error example fixed.** The default error format nests messages under `data.errors`. The
+      example in [Error handling](#section/Error-handling) used to show them directly under `data`.
+
+      ### Authentication
+
+      **Scopes are enforced.** Applications created on or after 2026-11-01 need `read` to read venues,
+      events, and contacts and `write` to create or update events and contacts. Older applications are
+      unchanged. See [Scopes](#section/Authentication/Scopes).
+
+      **Refresh tokens rotate.** Each refresh returns a new refresh token; store it. See
+      [Using refresh tokens](#section/Authentication/Using-refresh-tokens).
+
+      ### Contacts
+
+      **New [List contacts](#tag/Contacts/operation/listContacts) endpoint** for syncing every contact,
+      with `updated_after`, `created_after`, and cursor paging. Requires `PV-Version: 2026-11-01` and
+      the `contacts_read` scope.
+
+      ### Users
+
+      **New [List team members](#tag/Users/operation/listUsers) and
+      [Get team member](#tag/Users/operation/getUser) endpoints**, with the new `users_read` scope.
+
+      ### Events
+
+      **New `owner_id` field** on events in every response, and in the `event.created` and
+      `event.deleted` webhooks (schema version 2).
+
+      ### Webhooks
+
+      Documented the retry schedule, automatic disabling, and the rules for payload changes. See
+      [Webhooks](#tag/Webhooks).
+
       ## 1.3.0 — 2026-06-18
 
       ### Webhooks
@@ -745,6 +904,7 @@ x-tagGroups:
     tags:
       - Contacts
       - Events
+      - Users
       - Venues
   - name: Webhooks
     tags:
@@ -767,6 +927,10 @@ paths:
     $ref: 'paths/contacts.yaml'
   '/contacts/{contact_id}':
     $ref: 'paths/contacts_{contact_id}.yaml'
+  '/users':
+    $ref: 'paths/users.yaml'
+  '/users/{user_id}':
+    $ref: 'paths/users_{user_id}.yaml'
 webhooks:
   eventCreated:
     post:
@@ -804,11 +968,11 @@ webhooks:
                 data:
                   description: Event object emitted by the webhook. This uses the same serializer as Get Event and List Events.
                   type: object
-                  additionalProperties: false
                   required:
                     - id
                     - venue_id
                     - contact_id
+                    - owner_id
                     - name
                     - status
                     - group_size
@@ -833,6 +997,11 @@ webhooks:
                     contact_id:
                       type: string
                       description: Contact ID
+                    owner_id:
+                      type:
+                        - string
+                        - "null"
+                      description: ID of the team member who owns the event. Added in schema version 2.
                     name:
                       type:
                         - string
@@ -897,6 +1066,7 @@ webhooks:
                     id: dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3
                     venue_id: VENUE_ID
                     contact_id: CONTACT_ID
+                    owner_id: user_8xZk2LmQp4Vd7A
                     name: Henry's Wedding
                     status: lead
                     start_date: "2026-08-15T18:00:00Z"
@@ -1026,11 +1196,11 @@ webhooks:
                 data:
                   description: Deleted event object emitted by the webhook. Events are soft deleted, so the payload contains the event's last public shape.
                   type: object
-                  additionalProperties: false
                   required:
                     - id
                     - venue_id
                     - contact_id
+                    - owner_id
                     - name
                     - status
                     - group_size
@@ -1055,6 +1225,11 @@ webhooks:
                     contact_id:
                       type: string
                       description: Contact ID
+                    owner_id:
+                      type:
+                        - string
+                        - "null"
+                      description: ID of the team member who owns the event. Added in schema version 2.
                     name:
                       type:
                         - string
@@ -1119,6 +1294,7 @@ webhooks:
                     id: dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3
                     venue_id: VENUE_ID
                     contact_id: CONTACT_ID
+                    owner_id: user_8xZk2LmQp4Vd7A
                     name: Henry's Wedding
                     status: lost
                     start_date: "2026-08-15T18:00:00Z"
@@ -1173,7 +1349,6 @@ webhooks:
                 data:
                   description: Contact object emitted by the webhook. This uses the same serializer as Get Contact.
                   type: object
-                  additionalProperties: false
                   required:
                     - id
                     - venue_id
