@@ -182,9 +182,8 @@ info:
     In the default format, a missing, invalid, or expired token returns `401` with an empty body.
     The reason is in the `WWW-Authenticate` header, for example
     `Bearer realm="Doorkeeper", error="invalid_token", error_description="The access token is invalid"`.
-    A missing scope on an application created before 2026-11-01 works the same way with `403` and
-    `error="insufficient_scope"`. Other missing scopes return the `status: "fail"` body with
-    `code: "insufficient_scope"`. Unexpected server errors return
+    A missing scope on an application created before 2026-11-01 returns `403` with an empty body.
+    Other missing scopes return the `status: "fail"` body with `code: "insufficient_scope"`. Unexpected server errors return
     `{"status": "error", "message": "Internal server error"}`.
 
     Rate limited requests return `429 Too Many Requests` with a problem details body in every

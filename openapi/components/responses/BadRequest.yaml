@@ -1,4 +1,4 @@
-description: Bad Request. A parameter is missing or invalid, or validation failed.
+description: Bad Request. A parameter is missing or invalid, validation failed, or `PV-Version` is unknown.
 content:
   application/json:
     schema:

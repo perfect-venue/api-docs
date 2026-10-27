@@ -1,4 +1,4 @@
-type: string
+type: ["string", "null"]
 format: email
 description: The email of the contact
 example: andrew.mcplanner@example.com

@@ -1,13 +1,7 @@
 description: >
   Forbidden. The token is missing a required [scope](#section/Authentication/Scopes), or the
   authorizing user can't access the venue or resource. Without `PV-Version`, a missing scope on an
-  application created before 2026-11-01 returns an empty body with the reason in the
-  `WWW-Authenticate` header.
-headers:
-  WWW-Authenticate:
-    description: Present when a scope is missing, for example `Bearer realm="Doorkeeper", error="insufficient_scope", ...`
-    schema:
-      type: string
+  application created before 2026-11-01 returns `403` with an empty body.
 content:
   application/json:
     schema:
