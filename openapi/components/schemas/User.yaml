@@ -1,0 +1,34 @@
+type: object
+description: A member of the authorizing user's organization
+required:
+  - id
+  - first_name
+  - last_name
+  - email
+  - role
+  - venue_ids
+properties:
+  id:
+    type: string
+    description: The ID of the team member. Matches `owner_id` on events.
+    example: user_8xZk2LmQp4Vd7A
+  first_name:
+    type: ["string", "null"]
+    example: Grace
+  last_name:
+    type: ["string", "null"]
+    example: Hopper
+  email:
+    type: string
+    format: email
+    example: grace@example.com
+  role:
+    type: ["string", "null"]
+    description: The member's role in the organization
+    example: admin
+  venue_ids:
+    type: array
+    description: IDs of the organization's venues this member belongs to that your application can reach
+    items:
+      type: string
+    example: [venue_kS7acH85hLhDBg]

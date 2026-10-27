@@ -6,55 +6,45 @@ get:
     List venues available to the Perfect Venue user who authorized your application. Perfect Venue
     provisions OAuth application access for partner developers during integration setup, but a
     Perfect Venue user must log in and grant permission before your integration can call the API.
+
+
+    Requires the `read` scope for applications created on or after 2026-11-01. See [Scopes](#section/Authentication/Scopes).
   operationId: listVenues
+  parameters:
+    - $ref: "../components/parameters/PVVersion.yaml"
   responses:
     '200':
       description: Success
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [success]
-              data:
-                type: array
-                items:
-                  $ref: "../components/schemas/Venue.yaml"
+            oneOf:
+              - title: Default
+                type: object
+                required: [status, data]
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    type: array
+                    items:
+                      $ref: "../components/schemas/Venue.yaml"
+              - title: PV-Version 2026-11-01
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "../components/schemas/Venue.yaml"
+    '400':
+      $ref: "../components/responses/BadRequest.yaml"
     '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: Unauthorized
+      $ref: "../components/responses/Unauthorized.yaml"
     '403':
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: You do not have access to any venues
+      $ref: "../components/responses/Forbidden.yaml"
+    '404':
+      $ref: "../components/responses/NotFound.yaml"
+    '429':
+      $ref: "../components/responses/TooManyRequests.yaml"
