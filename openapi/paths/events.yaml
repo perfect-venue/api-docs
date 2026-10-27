@@ -14,8 +14,12 @@ get:
     are treated as `1`. `per_page` defaults to `25` and is clamped between `1` and `100`.
 
 
-    Pagination metadata is returned in `data.meta` with `current_page`, `per_page`, `total_count`,
-    and `total_pages`. The paginated event array is returned in `data.events`.
+    Pagination metadata has `current_page`, `per_page`, `total_count`, and `total_pages`. By default
+    the events are in `data.events` and the metadata in `data.meta`. Under `PV-Version: 2026-11-01`,
+    `data` is the array of events and the metadata is in a top level `meta`.
+
+
+    Requires the `read` scope for applications created on or after 2026-11-01. See [Scopes](#section/Authentication/Scopes).
   operationId: listEvents
   parameters:
     - in: query
@@ -118,123 +122,52 @@ get:
         maximum: 100
         default: 25
       description: Number of results per page (max 100)
+    - $ref: "../components/parameters/PVVersion.yaml"
   responses:
     '200':
       description: Success
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [success]
-              data:
+            oneOf:
+              - title: Default
                 type: object
+                required: [status, data]
                 properties:
-                  events:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    type: object
+                    required: [events, meta]
+                    properties:
+                      events:
+                        type: array
+                        items:
+                          $ref: "../components/schemas/Event.yaml"
+                      meta:
+                        $ref: "../components/schemas/PageMeta.yaml"
+              - title: PV-Version 2026-11-01
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
                     type: array
                     items:
                       $ref: "../components/schemas/Event.yaml"
                   meta:
-                    type: object
-                    properties:
-                      current_page:
-                        type: integer
-                        example: 1
-                      per_page:
-                        type: integer
-                        example: 25
-                      total_count:
-                        type: integer
-                        example: 100
-                      total_pages:
-                        type: integer
-                        example: 4
-          examples:
-            paginated_events:
-              summary: Paginated events
-              value:
-                status: success
-                data:
-                  events:
-                    - id: dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3
-                      venue_id: VENUE_ID
-                      contact_id: CONTACT_ID
-                      name: Henry's Wedding
-                      status: lead
-                      start_date: "2026-08-15T18:00:00Z"
-                      end_date: "2026-08-15T23:00:00Z"
-                      start_time: "2026-08-15T18:00:00Z"
-                      end_time: "2026-08-15T23:00:00Z"
-                      group_size: 120
-                      source: Partner Integration
-                      campaign: Summer 2026
-                      amount: 150000
-                      event_type: Wedding
-                      spaces:
-                        - main-hall
-                      created_at: "2026-06-16T17:00:00Z"
-                      updated_at: "2026-06-16T17:00:00Z"
-                  meta:
-                    current_page: 1
-                    per_page: 25
-                    total_count: 1
-                    total_pages: 1
+                    $ref: "../components/schemas/PageMeta.yaml"
     '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: venue_id is required
+      $ref: "../components/responses/BadRequest.yaml"
+    '401':
+      $ref: "../components/responses/Unauthorized.yaml"
     '403':
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: You do not have access to this venue
+      $ref: "../components/responses/Forbidden.yaml"
     '404':
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: Venue not found
+      $ref: "../components/responses/NotFound.yaml"
+    '429':
+      $ref: "../components/responses/TooManyRequests.yaml"
+
 post:
   tags:
     - Events
@@ -254,7 +187,12 @@ post:
     [create contact](/#tag/Contacts/operation/createContact) endpoint, you will get back a unique identifier for the contact that
     can be used to create events. You can also provide a top-level `contact` object to create or reuse a contact inline.
 
+
+
+    Requires the `write` scope for applications created on or after 2026-11-01. See [Scopes](#section/Authentication/Scopes).
   operationId: createEvent
+  parameters:
+    - $ref: "../components/parameters/PVVersion.yaml"
   requestBody:
     required: true
     content:
@@ -331,46 +269,29 @@ post:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [success]
-              data:
-                $ref: "../components/schemas/Event.yaml"
+            oneOf:
+              - title: Default
+                type: object
+                required: [status, data]
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    $ref: "../components/schemas/Event.yaml"
+              - title: PV-Version 2026-11-01
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "../components/schemas/Event.yaml"
     '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: End date must be after start date
+      $ref: "../components/responses/BadRequest.yaml"
+    '401':
+      $ref: "../components/responses/Unauthorized.yaml"
     '403':
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: You do not have access to this venue
+      $ref: "../components/responses/Forbidden.yaml"
+    '404':
+      $ref: "../components/responses/NotFound.yaml"
+    '429':
+      $ref: "../components/responses/TooManyRequests.yaml"

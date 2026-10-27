@@ -1,0 +1,9 @@
+description: Bad Request. A parameter is missing or invalid, or validation failed.
+content:
+  application/json:
+    schema:
+      oneOf:
+        - title: Default
+          $ref: "../schemas/LegacyError.yaml"
+        - title: PV-Version 2026-11-01
+          $ref: "../schemas/Problem.yaml"

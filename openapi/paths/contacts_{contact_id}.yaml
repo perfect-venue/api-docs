@@ -4,6 +4,9 @@ get:
   summary: Get contact
   description: >
     Get an individual contact by ID.
+
+
+    Requires the `read` scope for applications created on or after 2026-11-01. See [Scopes](#section/Authentication/Scopes).
   operationId: getContact
   parameters:
     - in: path
@@ -11,62 +14,47 @@ get:
       schema:
         type: string
         description: The ID of the contact
+    - $ref: "../components/parameters/PVVersion.yaml"
   responses:
     '200':
       description: Success
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [success]
-              data:
-                $ref: "../components/schemas/Contact.yaml"
+            oneOf:
+              - title: Default
+                type: object
+                required: [status, data]
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    $ref: "../components/schemas/Contact.yaml"
+              - title: PV-Version 2026-11-01
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "../components/schemas/Contact.yaml"
+    '401':
+      $ref: "../components/responses/Unauthorized.yaml"
     '403':
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: You do not have access to this venue
+      $ref: "../components/responses/Forbidden.yaml"
     '404':
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: Contact not found
-                
+      $ref: "../components/responses/NotFound.yaml"
+    '429':
+      $ref: "../components/responses/TooManyRequests.yaml"
+
 put:
   tags:
     - Contacts
   summary: Update contact
   description: >
     Update an individual contact by ID.
+
+
+    Requires the `write` scope for applications created on or after 2026-11-01. See [Scopes](#section/Authentication/Scopes).
   operationId: updateContact
   parameters:
     - in: path
@@ -74,6 +62,7 @@ put:
       schema:
         type: string
         description: The ID of the contact
+    - $ref: "../components/parameters/PVVersion.yaml"
   requestBody:
     required: true
     content:
@@ -98,46 +87,29 @@ put:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [success]
-              data:
-                $ref: "../components/schemas/Contact.yaml"
+            oneOf:
+              - title: Default
+                type: object
+                required: [status, data]
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    $ref: "../components/schemas/Contact.yaml"
+              - title: PV-Version 2026-11-01
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "../components/schemas/Contact.yaml"
     '400':
-        description: Bad Request
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                status:
-                  type: string
-                  enum: [fail]
-                data:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Email is malformed
+      $ref: "../components/responses/BadRequest.yaml"
+    '401':
+      $ref: "../components/responses/Unauthorized.yaml"
     '403':
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: You do not have access to this venue
+      $ref: "../components/responses/Forbidden.yaml"
+    '404':
+      $ref: "../components/responses/NotFound.yaml"
+    '429':
+      $ref: "../components/responses/TooManyRequests.yaml"

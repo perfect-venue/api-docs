@@ -4,6 +4,9 @@ get:
   summary: Get event
   description: >
     Get an individual event by ID.
+
+
+    Requires the `read` scope for applications created on or after 2026-11-01. See [Scopes](#section/Authentication/Scopes).
   operationId: getEvent
   parameters:
     - in: path
@@ -11,61 +14,47 @@ get:
       schema:
         type: string
         description: The ID of the event
+    - $ref: "../components/parameters/PVVersion.yaml"
   responses:
     '200':
       description: Success
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [success]
-              data:
-                $ref: "../components/schemas/Event.yaml"
+            oneOf:
+              - title: Default
+                type: object
+                required: [status, data]
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    $ref: "../components/schemas/Event.yaml"
+              - title: PV-Version 2026-11-01
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "../components/schemas/Event.yaml"
+    '401':
+      $ref: "../components/responses/Unauthorized.yaml"
     '403':
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: You do not have access to this event
+      $ref: "../components/responses/Forbidden.yaml"
     '404':
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: Event not found
+      $ref: "../components/responses/NotFound.yaml"
+    '429':
+      $ref: "../components/responses/TooManyRequests.yaml"
+
 patch:
   tags:
     - Events
   summary: Update event
   description: >
     Update an individual event by ID.
+
+
+    Requires the `write` scope for applications created on or after 2026-11-01. See [Scopes](#section/Authentication/Scopes).
   operationId: updateEvent
   parameters:
     - in: path
@@ -73,6 +62,7 @@ patch:
       schema:
         type: string
         description: The ID of the event
+    - $ref: "../components/parameters/PVVersion.yaml"
   requestBody:
     required: true
     content:
@@ -99,64 +89,29 @@ patch:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [success]
-              data:
-                $ref: "../components/schemas/Event.yaml"
+            oneOf:
+              - title: Default
+                type: object
+                required: [status, data]
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    $ref: "../components/schemas/Event.yaml"
+              - title: PV-Version 2026-11-01
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "../components/schemas/Event.yaml"
     '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: End time must be after start time
+      $ref: "../components/responses/BadRequest.yaml"
+    '401':
+      $ref: "../components/responses/Unauthorized.yaml"
     '403':
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: You do not have access to this event
+      $ref: "../components/responses/Forbidden.yaml"
     '404':
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: Event not found
+      $ref: "../components/responses/NotFound.yaml"
+    '429':
+      $ref: "../components/responses/TooManyRequests.yaml"

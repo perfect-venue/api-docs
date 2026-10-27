@@ -1,0 +1,18 @@
+description: >
+  Forbidden. The token is missing a required [scope](#section/Authentication/Scopes), or the
+  authorizing user can't access the venue or resource. Without `PV-Version`, a missing scope on an
+  application created before 2026-11-01 returns an empty body with the reason in the
+  `WWW-Authenticate` header.
+headers:
+  WWW-Authenticate:
+    description: Present when a scope is missing, for example `Bearer realm="Doorkeeper", error="insufficient_scope", ...`
+    schema:
+      type: string
+content:
+  application/json:
+    schema:
+      oneOf:
+        - title: Default
+          $ref: "../schemas/LegacyError.yaml"
+        - title: PV-Version 2026-11-01
+          $ref: "../schemas/Problem.yaml"

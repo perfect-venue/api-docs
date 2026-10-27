@@ -1,0 +1,15 @@
+description: >
+  Unauthorized. The access token is missing, invalid, expired, or revoked. Without `PV-Version` the
+  body is empty and the reason is in the `WWW-Authenticate` header.
+headers:
+  WWW-Authenticate:
+    description: >
+      The OAuth error, for example `Bearer realm="Doorkeeper", error="invalid_token",
+      error_description="The access token is invalid"`
+    schema:
+      type: string
+content:
+  application/json:
+    schema:
+      title: PV-Version 2026-11-01
+      $ref: "../schemas/Problem.yaml"
