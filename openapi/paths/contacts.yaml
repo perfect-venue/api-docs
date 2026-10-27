@@ -1,3 +1,79 @@
+get:
+  tags:
+    - Contacts
+  summary: List contacts
+  description: >
+    Lists every contact in the authorizing user's organization, oldest `updated_at` first, so you can
+    sync contacts into your system. Requires `PV-Version: 2026-11-01`; without the header this
+    endpoint returns an older format that only covers the last 24 hours, kept for existing
+    integrations.
+
+
+    To sync, store `updated_at` from the last contact you processed and pass it as `updated_after`
+    on the next run. Follow `meta.next_cursor` until it is `null` to read every page. The contact you
+    stored may come back again on the next run, so make your import safe to repeat.
+
+
+    Requires the `contacts_read` scope.
+  operationId: listContacts
+  parameters:
+    - $ref: "../components/parameters/PVVersion.yaml"
+    - in: query
+      name: updated_after
+      schema:
+        type: string
+        format: date-time
+      description: Only return contacts updated after this ISO 8601 timestamp
+    - in: query
+      name: created_after
+      schema:
+        type: string
+        format: date-time
+      description: Only return contacts created after this ISO 8601 timestamp
+    - in: query
+      name: limit
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 100
+      description: Contacts per page. Values above 100 are treated as 100.
+    - in: query
+      name: cursor
+      schema:
+        type: string
+      description: The `meta.next_cursor` value from the previous page
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [data, meta]
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "../components/schemas/SyncedContact.yaml"
+              meta:
+                type: object
+                required: [next_cursor]
+                properties:
+                  next_cursor:
+                    type: ["string", "null"]
+                    description: Pass as `cursor` to get the next page. `null` on the last page.
+    '400':
+      $ref: "../components/responses/BadRequest.yaml"
+    '401':
+      $ref: "../components/responses/Unauthorized.yaml"
+    '403':
+      $ref: "../components/responses/Forbidden.yaml"
+    '404':
+      $ref: "../components/responses/NotFound.yaml"
+    '429':
+      $ref: "../components/responses/TooManyRequests.yaml"
+
 post:
   tags:
     - Contacts
@@ -9,7 +85,12 @@ post:
     **Perfect Venue does not enforce unique fields on contacts**. If you want to avoid creating contacts with duplicate phone numbers or emails, we recommend storing a copy
     of the contact ID in your own database, and enforce unique fields there.
 
+
+
+    Requires the `write` scope for applications created on or after 2026-11-01. See [Scopes](#section/Authentication/Scopes).
   operationId: createContact
+  parameters:
+    - $ref: "../components/parameters/PVVersion.yaml"
   requestBody:
     required: true
     content:
@@ -37,46 +118,29 @@ post:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [success]
-              data:
-                $ref: "../components/schemas/Contact.yaml"
+            oneOf:
+              - title: Default
+                type: object
+                required: [status, data]
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    $ref: "../components/schemas/Contact.yaml"
+              - title: PV-Version 2026-11-01
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "../components/schemas/Contact.yaml"
     '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: Email is malformed
+      $ref: "../components/responses/BadRequest.yaml"
+    '401':
+      $ref: "../components/responses/Unauthorized.yaml"
     '403':
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                enum: [fail]
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: You do not have access to this venue
+      $ref: "../components/responses/Forbidden.yaml"
+    '404':
+      $ref: "../components/responses/NotFound.yaml"
+    '429':
+      $ref: "../components/responses/TooManyRequests.yaml"

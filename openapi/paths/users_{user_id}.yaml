@@ -1,0 +1,48 @@
+get:
+  tags:
+    - Users
+  summary: Get team member
+  description: >
+    Get a member of the authorizing user's organization by ID.
+
+
+    Requires the `users_read` scope.
+  operationId: getUser
+  parameters:
+    - in: path
+      name: user_id
+      required: true
+      schema:
+        type: string
+      description: The ID of the team member, for example an event's `owner_id`
+    - $ref: "../components/parameters/PVVersion.yaml"
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - title: Default
+                type: object
+                required: [status, data]
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    $ref: "../components/schemas/User.yaml"
+              - title: PV-Version 2026-11-01
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "../components/schemas/User.yaml"
+    '401':
+      $ref: "../components/responses/Unauthorized.yaml"
+    '403':
+      $ref: "../components/responses/Forbidden.yaml"
+    '404':
+      $ref: "../components/responses/NotFound.yaml"
+    '429':
+      $ref: "../components/responses/TooManyRequests.yaml"

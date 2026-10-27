@@ -3,6 +3,7 @@ required:
   - id
   - venue_id
   - contact_id
+  - owner_id
   - name
   - start_date
   - end_date
@@ -18,6 +19,12 @@ properties:
     $ref: "./VenueId.yaml"
   contact_id:
     $ref: "./ContactId.yaml"
+  owner_id:
+    type: ["string", "null"]
+    description: >
+      The ID of the team member who owns the event, or `null` when it has no owner. Look the owner
+      up with [Get team member](#tag/Users/operation/getUser).
+    example: user_8xZk2LmQp4Vd7A
   name:
     $ref: "./EventName.yaml"
   status:

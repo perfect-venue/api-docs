@@ -1,0 +1,47 @@
+get:
+  tags:
+    - Users
+  summary: List team members
+  description: >
+    Lists the members of the authorizing user's organization. Use it to show who owns an event
+    (`owner_id`) or to let someone pick a team member in your app.
+
+
+    Requires the `users_read` scope.
+  operationId: listUsers
+  parameters:
+    - $ref: "../components/parameters/PVVersion.yaml"
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - title: Default
+                type: object
+                required: [status, data]
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    type: array
+                    items:
+                      $ref: "../components/schemas/User.yaml"
+              - title: PV-Version 2026-11-01
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "../components/schemas/User.yaml"
+    '401':
+      $ref: "../components/responses/Unauthorized.yaml"
+    '403':
+      $ref: "../components/responses/Forbidden.yaml"
+    '404':
+      $ref: "../components/responses/NotFound.yaml"
+    '429':
+      $ref: "../components/responses/TooManyRequests.yaml"
