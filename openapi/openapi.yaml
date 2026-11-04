@@ -971,7 +971,6 @@ webhooks:
                     - id
                     - venue_id
                     - contact_id
-                    - owner_id
                     - name
                     - status
                     - group_size
@@ -1000,7 +999,7 @@ webhooks:
                       type:
                         - string
                         - "null"
-                      description: ID of the team member who owns the event. Added in schema version 2.
+                      description: ID of the team member who owns the event. Added in schema version 2, so it is missing from events created before then, which retries and replays can still deliver.
                     name:
                       type:
                         - string
@@ -1199,7 +1198,6 @@ webhooks:
                     - id
                     - venue_id
                     - contact_id
-                    - owner_id
                     - name
                     - status
                     - group_size
@@ -1228,7 +1226,7 @@ webhooks:
                       type:
                         - string
                         - "null"
-                      description: ID of the team member who owns the event. Added in schema version 2.
+                      description: ID of the team member who owns the event. Added in schema version 2, so it is missing from events created before then, which retries and replays can still deliver.
                     name:
                       type:
                         - string
