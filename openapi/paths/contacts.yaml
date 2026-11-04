@@ -17,7 +17,15 @@ get:
     Requires the `contacts_read` scope.
   operationId: listContacts
   parameters:
-    - $ref: "../components/parameters/PVVersion.yaml"
+    - in: header
+      name: PV-Version
+      required: true
+      description: >
+        API version for this request. This endpoint needs it; without it you get an older format
+        that only covers the last 24 hours. See [Versioning](#section/Versioning).
+      schema:
+        type: string
+        enum: ["2026-11-01"]
     - in: query
       name: updated_after
       schema:
@@ -131,6 +139,8 @@ post:
               - title: PV-Version 2026-11-01
                 type: object
                 required: [data]
+                not:
+                  required: [status]
                 properties:
                   data:
                     $ref: "../components/schemas/Contact.yaml"

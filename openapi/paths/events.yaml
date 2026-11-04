@@ -150,6 +150,8 @@ get:
               - title: PV-Version 2026-11-01
                 type: object
                 required: [data, meta]
+                not:
+                  required: [status]
                 properties:
                   data:
                     type: array
@@ -282,6 +284,8 @@ post:
               - title: PV-Version 2026-11-01
                 type: object
                 required: [data]
+                not:
+                  required: [status]
                 properties:
                   data:
                     $ref: "../components/schemas/Event.yaml"
