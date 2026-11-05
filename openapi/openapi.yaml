@@ -182,7 +182,8 @@ info:
     In the default format, a missing, invalid, or expired token returns `401` with an empty body.
     The reason is in the `WWW-Authenticate` header, for example
     `Bearer realm="Doorkeeper", error="invalid_token", error_description="The access token is invalid"`.
-    A missing scope on an application created before 2026-11-01 returns `403` with an empty body.
+    A missing scope on an application created before 2026-11-01 returns `403` with an empty body,
+    except from the team member endpoints.
     Other missing scopes return the `status: "fail"` body with `code: "insufficient_scope"`. Unexpected server errors return
     `{"status": "error", "message": "Internal server error"}`.
 
@@ -309,7 +310,8 @@ info:
     events, and contacts.
 
     A request with a token that lacks the scope returns `403 Forbidden`, and the body names the
-    missing scope.
+    missing scope. The exception is an application created before 2026-11-01 that doesn't send
+    `PV-Version`: it gets an empty `403` body, except from the team member endpoints.
 
     ## Using access tokens
 
@@ -396,7 +398,7 @@ info:
     | --- | --- | --- |
     | `401 Unauthorized` | The access token is missing, invalid, expired, or revoked | Refresh the token or send the user through OAuth again |
     | `403 Forbidden` | The token is valid, but the authorizing user does not have access to the requested venue or resource | Ask the user to confirm their Perfect Venue permissions or authorize with a different user |
-    | `403 Forbidden` (missing scope) | The token doesn't have a scope the endpoint requires; the body names it | Send the user through OAuth again, requesting that scope |
+    | `403 Forbidden` (missing scope) | The token doesn't have a scope the endpoint requires; the body names it, unless an application created before 2026-11-01 omits `PV-Version` (then the body is empty, except from the team member endpoints) | Send the user through OAuth again, requesting that scope |
 
     # Rate limiting
 

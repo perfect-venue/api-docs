@@ -1,7 +1,8 @@
 description: >
   Forbidden. The token is missing a required [scope](#section/Authentication/Scopes), or the
   authorizing user can't access the venue or resource. Without `PV-Version`, a missing scope on an
-  application created before 2026-11-01 returns `403` with an empty body.
+  application created before 2026-11-01 returns `403` with an empty body, except from the team
+  member endpoints.
 content:
   application/json:
     schema:
