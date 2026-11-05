@@ -1,0 +1,28 @@
+type: object
+description: Error body for requests without a `PV-Version` header.
+required:
+  - status
+  - data
+properties:
+  status:
+    type: string
+    enum: [fail]
+  data:
+    type: object
+    required:
+      - errors
+    properties:
+      errors:
+        type: array
+        items:
+          type: object
+          required:
+            - message
+          properties:
+            code:
+              type: string
+              description: Present on scope errors
+              example: insufficient_scope
+            message:
+              type: string
+              example: Venue not found

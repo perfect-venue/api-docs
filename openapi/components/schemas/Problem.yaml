@@ -1,0 +1,58 @@
+type: object
+description: >
+  Error body under `PV-Version: 2026-11-01`, in the RFC 9457 problem details format.
+required:
+  - type
+  - title
+  - status
+  - detail
+  - request_id
+properties:
+  type:
+    type: string
+    format: uri
+    description: Identifies the kind of error. Stable across messages, so branch on this rather than on `detail`.
+    enum:
+      - https://docs.perfectvenue.com/api/errors/invalid-request
+      - https://docs.perfectvenue.com/api/errors/authentication-error
+      - https://docs.perfectvenue.com/api/errors/forbidden
+      - https://docs.perfectvenue.com/api/errors/insufficient-scope
+      - https://docs.perfectvenue.com/api/errors/not-found
+      - https://docs.perfectvenue.com/api/errors/validation-error
+      - https://docs.perfectvenue.com/api/errors/internal-error
+    example: https://docs.perfectvenue.com/api/errors/not-found
+  title:
+    type: string
+    description: Short summary of the error type
+    example: Not found
+  status:
+    type: integer
+    description: The HTTP status code
+    example: 404
+  detail:
+    type: string
+    description: Explanation of this occurrence of the error
+    example: Venue not found
+  errors:
+    type: array
+    description: Field level errors, present on some validation errors
+    items:
+      type: object
+      required:
+        - field
+        - code
+        - message
+      properties:
+        field:
+          type: string
+          example: url
+        code:
+          type: string
+          example: blank
+        message:
+          type: string
+          example: can't be blank
+  request_id:
+    type: string
+    description: Matches the `X-Request-Id` response header. Include it when you contact support.
+    example: 9f6c2b0e-4a1d-4c55-8a3e-2f7d1c9b6a10

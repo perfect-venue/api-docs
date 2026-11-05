@@ -1,0 +1,9 @@
+in: header
+name: PV-Version
+required: false
+description: >
+  API version for this request. Leave it out to get the default response format. See
+  [Versioning](#section/Versioning).
+schema:
+  type: string
+  enum: ["2026-11-01"]

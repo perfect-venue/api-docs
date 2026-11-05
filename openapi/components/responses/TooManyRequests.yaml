@@ -1,0 +1,10 @@
+description: Too Many Requests. The access token exceeded the [rate limit](#section/Rate-limiting).
+headers:
+  Retry-After:
+    description: Seconds to wait before retrying
+    schema:
+      type: integer
+content:
+  application/json:
+    schema:
+      $ref: "../schemas/RateLimitProblem.yaml"

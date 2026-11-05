@@ -1,0 +1,33 @@
+type: object
+description: A contact in the contacts list, with timestamps for syncing
+required:
+  - id
+  - venue_id
+  - first_name
+  - last_name
+  - email
+  - phone
+  - created_at
+  - updated_at
+properties:
+  id:
+    $ref: "./ContactId.yaml"
+  venue_id:
+    $ref: "./VenueId.yaml"
+  first_name:
+    $ref: "./ContactFirstName.yaml"
+  last_name:
+    $ref: "./ContactLastName.yaml"
+  email:
+    $ref: "./ContactEmail.yaml"
+  phone:
+    $ref: "./ContactPhone.yaml"
+  created_at:
+    type: string
+    format: date-time
+    example: "2026-06-16T17:00:00.000Z"
+  updated_at:
+    type: string
+    format: date-time
+    description: Also changes when the contact's guest profile name, email, or phone changes
+    example: "2026-06-20T09:12:44.000Z"

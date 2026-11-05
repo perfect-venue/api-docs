@@ -8,7 +8,7 @@ properties:
   id:
     $ref: "./VenueId.yaml"
   name:
-    type: string
+    type: ["string", "null"]
     description: The name of the venue
     example: The Lola Rose
   timezone:
@@ -16,8 +16,8 @@ properties:
     description: The venue's timezone
     example: America/New_York
   website_url:
-    type: string
-    format: url
+    type: ["string", "null"]
+    format: uri
     description: The venue's website
     example: https://perfectvenue.com
   multi_day_enabled:
@@ -25,7 +25,9 @@ properties:
     description: Indicates if the venue supports multi-day events
     example: true
   address:
-    $ref: "./Address.yaml"
+    oneOf:
+      - $ref: "./Address.yaml"
+      - type: "null"
   event_types:
     type: array
     description: The event types configured for the venue
@@ -47,15 +49,15 @@ properties:
           description: The unique identifier for the space
           example: main-hall
         name:
-          type: string
+          type: ["string", "null"]
           description: The name of the space
           example: Main Hall
         standing:
-          type: integer
+          type: ["integer", "null"]
           description: Maximum standing capacity
           example: 200
         seated:
-          type: integer
+          type: ["integer", "null"]
           description: Maximum seated capacity
           example: 150
   custom_fields:
@@ -75,7 +77,7 @@ properties:
         data_type:
           type: string
           description: The data type of the field
-          enum: [string, number, boolean, enum, multi_enum]
+          enum: [short_text, long_text, enum, multi_enum, integer, date, time, currency, phone]
           example: enum
         options:
           type: array
