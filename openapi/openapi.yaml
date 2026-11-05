@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  version: 1.4.0
+  version: 1.5.0
   title: Perfect Venue REST API Docs
   contact:
     name: Perfect Venue Engineering
@@ -474,7 +474,7 @@ tags:
 
       ```text
       Endpoint URL: https://example.com/perfect-venue/webhooks
-      Event types: event.created, event.status_changed, event.deleted, contact.created
+      Event types: event.created, event.status_changed, event.deleted, contact.created, proposal.signed, payment.succeeded
       OAuth application: Partner Integration Name
       ```
 
@@ -546,6 +546,8 @@ tags:
       | `event.status_changed` | An event's status changes; payload includes the previous status |
       | `event.deleted` | An event is deleted (soft deleted) |
       | `contact.created` | A new inbound inquiry arrives |
+      | `proposal.signed` | A planner signs a proposal |
+      | `payment.succeeded` | A payment is marked paid |
 
       **Payloads**
 
@@ -669,6 +671,80 @@ tags:
       }
       ```
 
+      **`proposal.signed`**
+
+      Sent when a planner signs a proposal. The signature itself is never included.
+
+      | Field | Type | Description |
+      | --- | --- | --- |
+      | `id` | string | Proposal ID |
+      | `event_id` | string | Event ID, the same `id` the Events endpoints return |
+      | `venue_id` | string\|null | Venue ID |
+      | `action` | string\|null | What the proposal asks the planner to do: `agreement_deposit`, `agreement`, `deposit`, `remaining_balance`, `no_action`, `other_payment`, or `countersign` |
+      | `signed_at` | string\|null | ISO 8601 timestamp of the signature |
+      | `created_at` | string | ISO 8601 timestamp |
+      | `updated_at` | string | ISO 8601 timestamp |
+
+      Example:
+
+      ```json
+      {
+        "id": "0b9a5c1e-7d44-4f1e-9a63-2f4e8f0c7d21",
+        "type": "proposal.signed",
+        "api_version": "2026-06-01",
+        "created_at": "2026-06-20T18:04:00Z",
+        "data": {
+          "id": "proposal_Qm3vX8kTz1LpRw",
+          "event_id": "dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3",
+          "venue_id": "VENUE_ID",
+          "action": "agreement_deposit",
+          "signed_at": "2026-06-20T18:03:41Z",
+          "created_at": "2026-06-18T16:00:00Z",
+          "updated_at": "2026-06-20T18:03:41Z"
+        }
+      }
+      ```
+
+      **`payment.succeeded`**
+
+      Sent when a payment is marked paid, whatever the payment processor.
+
+      | Field | Type | Description |
+      | --- | --- | --- |
+      | `id` | string | Payment ID |
+      | `event_id` | string | Event ID, the same `id` the Events endpoints return |
+      | `venue_id` | string | Venue ID |
+      | `amount` | integer | Amount in cents |
+      | `kind` | string | `deposit`, `remaining_balance`, or `other` |
+      | `state` | string | Payment state, `paid` |
+      | `mechanism` | string | `card`, `ach`, or `offline` |
+      | `paid_at` | string\|null | ISO 8601 timestamp of the payment |
+      | `created_at` | string | ISO 8601 timestamp |
+      | `updated_at` | string | ISO 8601 timestamp |
+
+      Example:
+
+      ```json
+      {
+        "id": "5c2f8e0a-1b6d-4c3e-8f7a-9d0e1c2b3a45",
+        "type": "payment.succeeded",
+        "api_version": "2026-06-01",
+        "created_at": "2026-06-20T18:10:00Z",
+        "data": {
+          "id": "payment_Hc7nV2qWx9KdTs",
+          "event_id": "dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3",
+          "venue_id": "VENUE_ID",
+          "amount": 250000,
+          "kind": "deposit",
+          "state": "paid",
+          "mechanism": "card",
+          "paid_at": "2026-06-20T18:09:52Z",
+          "created_at": "2026-06-20T18:09:30Z",
+          "updated_at": "2026-06-20T18:09:52Z"
+        }
+      }
+      ```
+
       **Signature verification**
 
       Every delivery includes a `PV-Signature` header:
@@ -770,6 +846,14 @@ tags:
 
   - name: Changelog
     description: |
+      ## 1.5.0 (2026-11-05)
+
+      ### Webhooks
+
+      **New `proposal.signed` and `payment.succeeded` webhooks.** Sent when a planner signs a
+      proposal and when a payment is marked paid. Every ID in their payloads is a public ID string,
+      like the other event types and the REST API. See [Webhooks](#tag/Webhooks).
+
       ## 1.4.0 (2026-10-29)
 
       ### Versioning and errors
@@ -1395,6 +1479,198 @@ webhooks:
                     last_name: Lovelace
                     email: ada@example.com
                     phone: "+14155550100"
+      responses:
+        '200':
+          description: Return any 2xx status after safely accepting the delivery.
+  proposalSigned:
+    post:
+      tags:
+        - Webhooks
+      summary: proposal.signed
+      description: |
+        Sent when a planner signs a proposal. The signature itself is never included.
+      operationId: proposalSignedWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - type
+                - api_version
+                - created_at
+                - data
+              properties:
+                id:
+                  type: string
+                  description: Stable webhook delivery ID. Matches the `PV-Webhook-Id` header.
+                type:
+                  type: string
+                  enum: [proposal.signed]
+                api_version:
+                  type: string
+                  example: "2026-06-01"
+                created_at:
+                  type: string
+                  format: date-time
+                data:
+                  type: object
+                  required:
+                    - id
+                    - event_id
+                    - venue_id
+                    - action
+                    - signed_at
+                    - created_at
+                    - updated_at
+                  properties:
+                    id:
+                      type: string
+                      description: Proposal ID
+                    event_id:
+                      type: string
+                      description: Event ID
+                    venue_id:
+                      type:
+                        - string
+                        - "null"
+                      description: Venue ID
+                    action:
+                      type:
+                        - string
+                        - "null"
+                      enum: [agreement_deposit, agreement, deposit, remaining_balance, no_action, other_payment, countersign, null]
+                      description: What the proposal asks the planner to do
+                    signed_at:
+                      type:
+                        - string
+                        - "null"
+                      format: date-time
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+            examples:
+              proposal_signed:
+                summary: Proposal signed
+                value:
+                  id: 0b9a5c1e-7d44-4f1e-9a63-2f4e8f0c7d21
+                  type: proposal.signed
+                  api_version: "2026-06-01"
+                  created_at: "2026-06-20T18:04:00Z"
+                  data:
+                    id: proposal_Qm3vX8kTz1LpRw
+                    event_id: dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3
+                    venue_id: VENUE_ID
+                    action: agreement_deposit
+                    signed_at: "2026-06-20T18:03:41Z"
+                    created_at: "2026-06-18T16:00:00Z"
+                    updated_at: "2026-06-20T18:03:41Z"
+      responses:
+        '200':
+          description: Return any 2xx status after safely accepting the delivery.
+  paymentSucceeded:
+    post:
+      tags:
+        - Webhooks
+      summary: payment.succeeded
+      description: |
+        Sent when a payment is marked paid, whatever the payment processor.
+      operationId: paymentSucceededWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - type
+                - api_version
+                - created_at
+                - data
+              properties:
+                id:
+                  type: string
+                  description: Stable webhook delivery ID. Matches the `PV-Webhook-Id` header.
+                type:
+                  type: string
+                  enum: [payment.succeeded]
+                api_version:
+                  type: string
+                  example: "2026-06-01"
+                created_at:
+                  type: string
+                  format: date-time
+                data:
+                  type: object
+                  required:
+                    - id
+                    - event_id
+                    - venue_id
+                    - amount
+                    - kind
+                    - state
+                    - mechanism
+                    - paid_at
+                    - created_at
+                    - updated_at
+                  properties:
+                    id:
+                      type: string
+                      description: Payment ID
+                    event_id:
+                      type: string
+                      description: Event ID
+                    venue_id:
+                      type: string
+                      description: Venue ID
+                    amount:
+                      type: integer
+                      description: Amount in cents
+                    kind:
+                      type: string
+                      enum: [deposit, remaining_balance, other]
+                    state:
+                      type: string
+                      enum: [paid]
+                    mechanism:
+                      type: string
+                      enum: [card, ach, offline]
+                    paid_at:
+                      type:
+                        - string
+                        - "null"
+                      format: date-time
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+            examples:
+              payment_succeeded:
+                summary: Payment succeeded
+                value:
+                  id: 5c2f8e0a-1b6d-4c3e-8f7a-9d0e1c2b3a45
+                  type: payment.succeeded
+                  api_version: "2026-06-01"
+                  created_at: "2026-06-20T18:10:00Z"
+                  data:
+                    id: payment_Hc7nV2qWx9KdTs
+                    event_id: dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3
+                    venue_id: VENUE_ID
+                    amount: 250000
+                    kind: deposit
+                    state: paid
+                    mechanism: card
+                    paid_at: "2026-06-20T18:09:52Z"
+                    created_at: "2026-06-20T18:09:30Z"
+                    updated_at: "2026-06-20T18:09:52Z"
       responses:
         '200':
           description: Return any 2xx status after safely accepting the delivery.
