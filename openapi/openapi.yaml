@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  version: 1.5.0
+  version: 1.6.0
   title: Perfect Venue REST API Docs
   contact:
     name: Perfect Venue Engineering
@@ -440,6 +440,22 @@ tags:
     description: "Contact operations"
   - name: Users
     description: "Team members in the authorizing user's organization"
+  - name: Proposals
+    description: |
+      A proposal is what a venue sends a planner to agree to: the line items, prices, policies, and
+      signature for an event. Most events have one proposal; venues on the Enterprise plan can send
+      several alternatives for the same event.
+
+      Every event returned by the Events endpoints carries its proposals in a `proposals` array, so
+      syncing events gives you their documents with no extra requests. Use
+      [Get proposal](#tag/Proposals/operation/getProposal) when you have a proposal ID on its own, for
+      example from the `proposal.signed` webhook. Webhook event payloads do not include `proposals`.
+
+      Every proposal lists the documents Perfect Venue can produce for it, such as the BEO, Staff BEO,
+      invoice, event summary, guest menu, floor plans, and the venue's custom documents, each with a
+      link to the PDF. The PDF is rendered from the proposal's current contents when the link is opened.
+      These are the same links the Perfect Venue app uses and they open without authentication today;
+      a future version may require a Perfect Venue login, and this changelog will say so in advance.
   - name: Webhooks
     description: |
       Perfect Venue can notify your application in real time when data changes for venues available
@@ -846,6 +862,19 @@ tags:
 
   - name: Changelog
     description: |
+      ## 1.6.0 (2026-11-09)
+
+      ### Proposals
+
+      **Proposals on events.** Every event from [List Events](#tag/Events/operation/listEvents),
+      [Get Event](#tag/Events/operation/getEvent), [Create Event](#tag/Events/operation/createEvent),
+      and [Update Event](#tag/Events/operation/updateEvent) now has a `proposals` array: each proposal's
+      ID, whether it has been signed, and links to its PDF documents (BEO, Staff BEO, invoice, event
+      summary, guest menu, floor plans, and the venue's custom documents). Webhook payloads are unchanged.
+
+      **New [Get proposal](#tag/Proposals/operation/getProposal) endpoint.** Fetch one proposal by the
+      ID the `proposals` array and the `proposal.signed` webhook carry.
+
       ## 1.5.0 (2026-11-05)
 
       ### Webhooks
@@ -989,6 +1018,7 @@ x-tagGroups:
     tags:
       - Contacts
       - Events
+      - Proposals
       - Users
       - Venues
   - name: Webhooks
@@ -1008,6 +1038,8 @@ paths:
     $ref: 'paths/events.yaml'
   '/events/{event_id}':
     $ref: 'paths/events_{event_id}.yaml'
+  '/proposals/{proposal_id}':
+    $ref: 'paths/proposals_{proposal_id}.yaml'
   '/contacts':
     $ref: 'paths/contacts.yaml'
   '/contacts/{contact_id}':
@@ -1051,7 +1083,7 @@ webhooks:
                   type: string
                   format: date-time
                 data:
-                  description: Event object emitted by the webhook. This uses the same serializer as Get Event and List Events.
+                  description: Event object emitted by the webhook. Same fields as Get Event and List Events, without `proposals`.
                   type: object
                   required:
                     - id

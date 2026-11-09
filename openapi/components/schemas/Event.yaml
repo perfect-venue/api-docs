@@ -10,6 +10,7 @@ required:
   - status
   - created_at
   - updated_at
+  - proposals
 properties:
   id:
     type: string
@@ -64,3 +65,10 @@ properties:
     format: date-time
     description: ISO 8601 timestamp when the event was last updated
     example: "2026-06-01T14:30:00Z"
+  proposals:
+    type: array
+    description: >
+      The event's proposals, oldest first, each with links to its PDF documents. Not included in
+      webhook payloads.
+    items:
+      $ref: "./Proposal.yaml"
