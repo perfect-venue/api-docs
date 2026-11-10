@@ -3,8 +3,8 @@ info:
   version: 1.6.0
   title: Perfect Venue REST API Docs
   contact:
-    name: Perfect Venue Engineering
-    email: eng@perfectvenue.com
+    name: Perfect Venue Support
+    email: support@perfectvenue.com
     url: https://www.perfectvenue.com
   license:
     name: Terms of Service
@@ -15,8 +15,10 @@ info:
   description: |
     # Introduction
 
-    Welcome to the Perfect Venue API docs. This API is available to Perfect Venue partners. If you're interested
-    in building an integration, please reach out to eng@perfectvenue.com and we'll help you get set up.  
+    Welcome to the Perfect Venue API docs. Customers on the Enterprise plan can create their own apps
+    from Settings in Perfect Venue; see [Creating an app](#section/Authentication/Creating-an-app).
+    Partners building an integration for many customers should reach out to support@perfectvenue.com
+    and we'll help you get set up.
     
 
     This site was generated with [Redoc](https://github.com/Redocly/Redoc) and the [OpenAPI/Swagger
@@ -26,8 +28,10 @@ info:
 
     Use this flow when building a new integration:
 
-      1. Contact Perfect Venue to provision OAuth access for your integration.
-      2. Perfect Venue will configure your OAuth application and provide client credentials to your partner developer team.
+      1. Create an app under **Settings → Developer** in Perfect Venue (Enterprise plan), or contact
+         support@perfectvenue.com if you are a partner building for many customers. See
+         [Creating an app](#section/Authentication/Creating-an-app).
+      2. Copy the app's client ID and client secret to your server.
       3. Send a Perfect Venue user with access to the relevant venues through the OAuth authorization code flow, requesting the [scopes](#section/Authentication/Scopes) you need.
       4. Exchange the authorization code for an access token and refresh token.
       5. Call `GET /venues` to find the venues available to the authorizing Perfect Venue user.
@@ -194,7 +198,7 @@ info:
 
     Every response has an `X-Request-Id` header. Problem details bodies, including rate limit
     responses, repeat it as `request_id`. Log it with failed requests and include it when you contact
-    eng@perfectvenue.com, so we can find the request.
+    support@perfectvenue.com, so we can find the request.
 
     # Authentication
 
@@ -215,9 +219,32 @@ info:
     user can access two venues, `GET /venues` returns those venues and API writes are limited to
     resources that user can access.
 
+    ## Creating an app
+
+    An app is what connects your software, or a tool you use, to Perfect Venue on behalf of a
+    team. Organization admins on the Enterprise plan create apps themselves under
+    **Settings → Developer** at `app.perfectvenue.com/settings/developer`. Organizations on other
+    plans keep managing the apps they already have, and partners building for many customers can
+    ask support@perfectvenue.com to set one up.
+
+    When you create an app you choose:
+
+    | Field | Notes |
+    | --- | --- |
+    | Name and logo | Shown to people on the consent screen when they connect the app |
+    | Redirect URIs | One per line. Must use `https`; `localhost` and `http` are not accepted |
+    | Private | Only your own organization can connect a private app. This cannot be changed after the app is created |
+
+    A **private** app is ready to use as soon as it is created, and its tokens only ever reach
+    venues in your organization. A **public** app is reviewed by Perfect Venue before other
+    organizations can connect it; until it is approved, you can connect and test it from your own
+    account. Changing a published app's name, logo, or redirect URIs sends it back to review, and
+    other organizations cannot connect it until it is approved again.
+
     ## OAuth credentials
 
-    Perfect Venue provides the following values during setup:
+    Each app has the following values, shown on the Developer settings page or provided by Perfect
+    Venue during setup:
 
     | Value | Description |
     | --- | --- |
@@ -426,7 +453,7 @@ info:
     }
     ~~~
 
-    When you receive a `429`, wait before retrying. For API support, contact eng@perfectvenue.com.
+    When you receive a `429`, wait before retrying. For API support, contact support@perfectvenue.com.
 
 externalDocs:
   description: "Visit our Help Center for guides and tutorials"
@@ -477,8 +504,8 @@ tags:
 
       **Subscribing to events**
 
-      Webhook subscriptions are configured by Perfect Venue during integration setup. To subscribe,
-      send eng@perfectvenue.com:
+      Webhook subscriptions are configured by Perfect Venue; the Developer settings page does not
+      manage them yet. To subscribe, send support@perfectvenue.com:
 
       | Field | Description |
       | --- | --- |
@@ -874,6 +901,16 @@ tags:
 
       **New [Get proposal](#tag/Proposals/operation/getProposal) endpoint.** Fetch one proposal by the
       ID the `proposals` array and the `proposal.signed` webhook carry.
+
+      ### Apps
+
+      **Self-service apps for Enterprise customers.** Organization admins on the Enterprise plan can
+      create and manage their own OAuth apps under Settings → Developer, including private apps that
+      only their organization can connect. See [Creating an app](#section/Authentication/Creating-an-app).
+
+      ### Support
+
+      **New contact address.** API questions now go to support@perfectvenue.com.
 
       ## 1.5.0 (2026-11-05)
 
