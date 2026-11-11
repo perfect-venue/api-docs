@@ -1,0 +1,59 @@
+type: object
+description: >
+  A proposal on an event. Most events have one; venues on the Enterprise plan can send several
+  alternatives. The planner accepts a proposal by signing it.
+required:
+  - id
+  - event_id
+  - venue_id
+  - accepted
+  - created_at
+  - updated_at
+  - documents
+properties:
+  id:
+    $ref: "./ProposalId.yaml"
+  event_id:
+    type: string
+    description: The ID of the event, the same `id` the Events endpoints return
+    example: dfa4b137-1b3e-4927-a3d8-0e0e5bd601e3
+  venue_id:
+    $ref: "./VenueId.yaml"
+  name:
+    type: ["string", "null"]
+    description: The proposal's name. Set when an event has more than one proposal; otherwise `null`.
+    example: Plated dinner
+  accepted:
+    type: boolean
+    description: Whether the planner has signed the proposal
+    example: true
+  action:
+    type: ["string", "null"]
+    description: What the proposal currently asks the planner to do
+    enum: [agreement_deposit, agreement, deposit, remaining_balance, no_action, other_payment, countersign, null]
+    example: no_action
+  signed_at:
+    type: ["string", "null"]
+    format: date-time
+    description: ISO 8601 timestamp of the planner's signature, or `null` if unsigned
+    example: "2026-06-20T18:03:41Z"
+  venue_signed_at:
+    type: ["string", "null"]
+    format: date-time
+    description: ISO 8601 timestamp of the venue's countersignature, or `null`
+    example: null
+  created_at:
+    type: string
+    format: date-time
+    description: ISO 8601 timestamp when the proposal was created
+    example: "2026-06-18T16:00:00Z"
+  updated_at:
+    type: string
+    format: date-time
+    description: ISO 8601 timestamp when the proposal was last updated
+    example: "2026-06-20T18:03:41Z"
+  documents:
+    type: array
+    description: The documents you can download for this proposal, in the order the app shows them
+    items:
+      $ref: "./ProposalDocument.yaml"

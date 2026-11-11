@@ -1,0 +1,37 @@
+type: object
+description: >
+  A document Perfect Venue can produce for the proposal. Automatic documents are rendered from the
+  proposal's current contents; custom documents are the venue's own templates filled in for the event.
+required:
+  - id
+  - type
+  - name
+  - url
+properties:
+  id:
+    type: string
+    description: A fixed slug for automatic documents, or the custom document's own ID
+    example: beo
+  type:
+    type: string
+    description: >
+      Which document this is. `event_summary`, `invoice`, and `beo` show prices and are only listed when
+      the authorizing user can see them. `floor_plans` is listed when the venue has the floor plans
+      add-on. `custom` is one of the venue's custom documents.
+    enum: [event_summary, invoice, beo, staff_beo, menu, floor_plans, custom]
+    example: beo
+  name:
+    type: string
+    description: Display name, as shown in the Perfect Venue app
+    example: BEO
+  description:
+    type: ["string", "null"]
+    description: What the document includes
+    example: Event details, proposal, prices, payments, and internal notes.
+  url:
+    type: string
+    format: uri
+    description: >
+      Link to the PDF, rendered when opened. The same link the Perfect Venue app uses. It opens without
+      authentication today; a future version may require a Perfect Venue login.
+    example: https://api.perfectvenue.com/pdfs/0b9a5c1e-7d44-4f1e-9a63-2f4e8f0c7d21/beo.pdf

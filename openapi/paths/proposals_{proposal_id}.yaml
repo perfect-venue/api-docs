@@ -1,0 +1,50 @@
+get:
+  tags:
+    - Proposals
+  summary: Get proposal
+  description: >
+    Get an individual proposal by ID. The ID is the same `id` found in an event's `proposals` array
+    and carried by the `proposal.signed` webhook.
+
+
+    Requires the `read` scope for applications created on or after 2026-11-01. See [Scopes](#section/Authentication/Scopes).
+  operationId: getProposal
+  parameters:
+    - in: path
+      name: proposal_id
+      required: true
+      schema:
+        $ref: "../components/schemas/ProposalId.yaml"
+    - $ref: "../components/parameters/PVVersion.yaml"
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - title: Default
+                type: object
+                required: [status, data]
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    $ref: "../components/schemas/Proposal.yaml"
+              - title: PV-Version 2026-11-01
+                type: object
+                required: [data]
+                not:
+                  required: [status]
+                properties:
+                  data:
+                    $ref: "../components/schemas/Proposal.yaml"
+    '401':
+      $ref: "../components/responses/Unauthorized.yaml"
+    '403':
+      $ref: "../components/responses/Forbidden.yaml"
+    '404':
+      $ref: "../components/responses/NotFound.yaml"
+    '429':
+      $ref: "../components/responses/TooManyRequests.yaml"

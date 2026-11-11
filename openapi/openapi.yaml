@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
-  version: 1.5.0
+  version: 1.6.0
   title: Perfect Venue REST API Docs
   contact:
-    name: Perfect Venue Engineering
-    email: eng@perfectvenue.com
+    name: Perfect Venue Support
+    email: support@perfectvenue.com
     url: https://www.perfectvenue.com
   license:
     name: Terms of Service
@@ -15,8 +15,10 @@ info:
   description: |
     # Introduction
 
-    Welcome to the Perfect Venue API docs. This API is available to Perfect Venue partners. If you're interested
-    in building an integration, please reach out to eng@perfectvenue.com and we'll help you get set up.  
+    Welcome to the Perfect Venue API docs. Customers on the Enterprise plan can create their own apps
+    from Settings in Perfect Venue; see [Creating an app](#section/Authentication/Creating-an-app).
+    Partners building an integration for many customers should reach out to support@perfectvenue.com
+    and we'll help you get set up.
     
 
     This site was generated with [Redoc](https://github.com/Redocly/Redoc) and the [OpenAPI/Swagger
@@ -26,8 +28,10 @@ info:
 
     Use this flow when building a new integration:
 
-      1. Contact Perfect Venue to provision OAuth access for your integration.
-      2. Perfect Venue will configure your OAuth application and provide client credentials to your partner developer team.
+      1. Create an app under **Settings → Developer** in Perfect Venue (Enterprise plan), or contact
+         support@perfectvenue.com if you are a partner building for many customers. See
+         [Creating an app](#section/Authentication/Creating-an-app).
+      2. Copy the app's client ID and client secret to your server.
       3. Send a Perfect Venue user with access to the relevant venues through the OAuth authorization code flow, requesting the [scopes](#section/Authentication/Scopes) you need.
       4. Exchange the authorization code for an access token and refresh token.
       5. Call `GET /venues` to find the venues available to the authorizing Perfect Venue user.
@@ -194,7 +198,7 @@ info:
 
     Every response has an `X-Request-Id` header. Problem details bodies, including rate limit
     responses, repeat it as `request_id`. Log it with failed requests and include it when you contact
-    eng@perfectvenue.com, so we can find the request.
+    support@perfectvenue.com, so we can find the request.
 
     # Authentication
 
@@ -215,9 +219,32 @@ info:
     user can access two venues, `GET /venues` returns those venues and API writes are limited to
     resources that user can access.
 
+    ## Creating an app
+
+    An app is what connects your software, or a tool you use, to Perfect Venue on behalf of a
+    team. Organization admins on the Enterprise plan create apps themselves under
+    **Settings → Developer** at `app.perfectvenue.com/settings/developer`. Organizations on other
+    plans keep managing the apps they already have, and partners building for many customers can
+    ask support@perfectvenue.com to set one up.
+
+    When you create an app you choose:
+
+    | Field | Notes |
+    | --- | --- |
+    | Name and logo | Shown to people on the consent screen when they connect the app |
+    | Redirect URIs | One per line. Must use `https`; `localhost` and `http` are not accepted |
+    | Private | Only your own organization can connect a private app. This cannot be changed after the app is created |
+
+    A **private** app is ready to use as soon as it is created, and its tokens only ever reach
+    venues in your organization. A **public** app is reviewed by Perfect Venue before other
+    organizations can connect it; until it is approved, you can connect and test it from your own
+    account. Changing a published app's name, logo, or redirect URIs sends it back to review, and
+    other organizations cannot connect it until it is approved again.
+
     ## OAuth credentials
 
-    Perfect Venue provides the following values during setup:
+    Each app has the following values, shown on the Developer settings page or provided by Perfect
+    Venue during setup:
 
     | Value | Description |
     | --- | --- |
@@ -426,7 +453,7 @@ info:
     }
     ~~~
 
-    When you receive a `429`, wait before retrying. For API support, contact eng@perfectvenue.com.
+    When you receive a `429`, wait before retrying. For API support, contact support@perfectvenue.com.
 
 externalDocs:
   description: "Visit our Help Center for guides and tutorials"
@@ -440,6 +467,22 @@ tags:
     description: "Contact operations"
   - name: Users
     description: "Team members in the authorizing user's organization"
+  - name: Proposals
+    description: |
+      A proposal is what a venue sends a planner to agree to: the line items, prices, policies, and
+      signature for an event. Most events have one proposal; venues on the Enterprise plan can send
+      several alternatives for the same event.
+
+      Every event returned by the Events endpoints carries its proposals in a `proposals` array, so
+      syncing events gives you their documents with no extra requests. Use
+      [Get proposal](#tag/Proposals/operation/getProposal) when you have a proposal ID on its own, for
+      example from the `proposal.signed` webhook. Webhook event payloads do not include `proposals`.
+
+      Every proposal lists the documents Perfect Venue can produce for it, such as the BEO, Staff BEO,
+      invoice, event summary, guest menu, floor plans, and the venue's custom documents, each with a
+      link to the PDF. The PDF is rendered from the proposal's current contents when the link is opened.
+      These are the same links the Perfect Venue app uses and they open without authentication today;
+      a future version may require a Perfect Venue login, and this changelog will say so in advance.
   - name: Webhooks
     description: |
       Perfect Venue can notify your application in real time when data changes for venues available
@@ -461,8 +504,8 @@ tags:
 
       **Subscribing to events**
 
-      Webhook subscriptions are configured by Perfect Venue during integration setup. To subscribe,
-      send eng@perfectvenue.com:
+      Webhook subscriptions are configured by Perfect Venue; the Developer settings page does not
+      manage them yet. To subscribe, send support@perfectvenue.com:
 
       | Field | Description |
       | --- | --- |
@@ -846,6 +889,29 @@ tags:
 
   - name: Changelog
     description: |
+      ## 1.6.0 (2026-11-09)
+
+      ### Proposals
+
+      **Proposals on events.** Every event from [List Events](#tag/Events/operation/listEvents),
+      [Get Event](#tag/Events/operation/getEvent), [Create Event](#tag/Events/operation/createEvent),
+      and [Update Event](#tag/Events/operation/updateEvent) now has a `proposals` array: each proposal's
+      ID, whether it has been signed, and links to its PDF documents (BEO, Staff BEO, invoice, event
+      summary, guest menu, floor plans, and the venue's custom documents). Webhook payloads are unchanged.
+
+      **New [Get proposal](#tag/Proposals/operation/getProposal) endpoint.** Fetch one proposal by the
+      ID the `proposals` array and the `proposal.signed` webhook carry.
+
+      ### Apps
+
+      **Self-service apps for Enterprise customers.** Organization admins on the Enterprise plan can
+      create and manage their own OAuth apps under Settings → Developer, including private apps that
+      only their organization can connect. See [Creating an app](#section/Authentication/Creating-an-app).
+
+      ### Support
+
+      **New contact address.** API questions now go to support@perfectvenue.com.
+
       ## 1.5.0 (2026-11-05)
 
       ### Webhooks
@@ -989,6 +1055,7 @@ x-tagGroups:
     tags:
       - Contacts
       - Events
+      - Proposals
       - Users
       - Venues
   - name: Webhooks
@@ -1008,6 +1075,8 @@ paths:
     $ref: 'paths/events.yaml'
   '/events/{event_id}':
     $ref: 'paths/events_{event_id}.yaml'
+  '/proposals/{proposal_id}':
+    $ref: 'paths/proposals_{proposal_id}.yaml'
   '/contacts':
     $ref: 'paths/contacts.yaml'
   '/contacts/{contact_id}':
@@ -1051,7 +1120,7 @@ webhooks:
                   type: string
                   format: date-time
                 data:
-                  description: Event object emitted by the webhook. This uses the same serializer as Get Event and List Events.
+                  description: Event object emitted by the webhook. Same fields as Get Event and List Events, without `proposals`.
                   type: object
                   required:
                     - id
